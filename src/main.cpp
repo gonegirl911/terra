@@ -5,6 +5,6 @@
 
 int main() {
   const Window window{};
-  const Renderer renderer{};
-  window.run();
+  const Renderer renderer{window};
+  window.run([] {});
 }

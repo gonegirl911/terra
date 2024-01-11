@@ -13,11 +13,3 @@ Window::Window() {
     throw std::runtime_error{"Could not create window"};
   }
 }
-
-Window::~Window() { glfwTerminate(); }
-
-void Window::run() const {
-  while (!glfwWindowShouldClose(m_window)) {
-    glfwPollEvents();
-  }
-}
