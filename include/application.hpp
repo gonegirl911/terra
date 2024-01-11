@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/renderer.hpp"
+#include "renderer.hpp"
 #include "window.hpp"
 
 class Application {
@@ -14,4 +14,7 @@ class Application {
  private:
   Window m_window;
   Renderer m_renderer;
+
+  void update();
+  void draw();
 };

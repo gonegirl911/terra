@@ -17,7 +17,15 @@ class Window {
 
   void setUserData(auto& data) const { glfwSetWindowUserPointer(m_window, &data); }
 
-  void onResize(GLFWframebuffersizefun f) const;
+  void setResizeCallback(GLFWframebuffersizefun f) const;
+
+  void setMouseButtonCallback(GLFWmousebuttonfun f) const;
+
+  void setKeyCallback(GLFWkeyfun f) const;
+
+  void onMouseButton(int button, int action);
+
+  void onKey(int key, int action);
 
   void run(std::invocable auto f) const {
     while (!glfwWindowShouldClose(m_window)) {

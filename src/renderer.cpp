@@ -1,9 +1,8 @@
 #define WEBGPU_CPP_IMPLEMENTATION
-#include "renderer/renderer.hpp"
+#include "renderer.hpp"
 #include <stdexcept>
 #include <webgpu/webgpu.hpp>
 #include "glfw3webgpu.h"
-#include "renderer/adapter.hpp"
 #include "window.hpp"
 
 Renderer::Renderer(const Window& window) : instance{wgpu::createInstance(wgpu::Default)} {
@@ -16,7 +15,13 @@ Renderer::Renderer(const Window& window) : instance{wgpu::createInstance(wgpu::D
     throw std::runtime_error{"Could not get surface"};
   }
 
-  Adapter adapter{instance, surface};
+  wgpu::RequestAdapterOptions requestAdapterOpts{wgpu::Default};
+  requestAdapterOpts.powerPreference = wgpu::PowerPreference::HighPerformance;
+  requestAdapterOpts.compatibleSurface = surface;
+  auto adapter = instance.requestAdapter(requestAdapterOpts);
+  if (!adapter) {
+    throw std::runtime_error{"Adapter not available"};
+  }
 
   device = adapter.requestDevice(wgpu::Default);
   if (!device) {
@@ -29,6 +34,8 @@ Renderer::Renderer(const Window& window) : instance{wgpu::createInstance(wgpu::D
   queue = device.getQueue();
 
   config = getDefaultConfig(window, adapter);
+
+  adapter.release();
 }
 
 Renderer::~Renderer() {
