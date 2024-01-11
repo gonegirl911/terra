@@ -1,3 +1,6 @@
 [submodule "extern/glfw"]
 	path = extern/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "extern/glfw3webgpu"]
+	path = extern/glfw3webgpu
+	url = https://github.com/eliemichel/glfw3webgpu.git
