@@ -15,3 +15,15 @@ Window::Window() {
 }
 
 Window::~Window() { glfwTerminate(); }
+
+Window::operator GLFWwindow*() const { return m_window; }
+
+std::pair<int, int> Window::size() const {
+  int width, height;
+  glfwGetFramebufferSize(m_window, &width, &height);
+  return {width, height};
+}
+
+void Window::onResize(GLFWframebuffersizefun f) const {
+  glfwSetFramebufferSizeCallback(m_window, f);
+}
