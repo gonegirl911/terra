@@ -8,6 +8,7 @@ class Window {
   Window();
   Window(const Window&) = delete;
   Window& operator=(const Window&) = delete;
+  ~Window();
 
   operator GLFWwindow*() const { return m_window; }
 

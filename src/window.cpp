@@ -13,3 +13,5 @@ Window::Window() {
     throw std::runtime_error{"Could not create window"};
   }
 }
+
+Window::~Window() { glfwTerminate(); }
