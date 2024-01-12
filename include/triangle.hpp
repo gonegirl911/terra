@@ -9,8 +9,6 @@
 class Triangle {
  public:
   explicit Triangle(Renderer& renderer);
-  Triangle(const Triangle&) = delete;
-  Triangle& operator=(const Triangle&) = delete;
 
   void draw(wgpu::TextureView view, wgpu::CommandEncoder encoder);
 

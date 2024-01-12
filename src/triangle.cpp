@@ -13,7 +13,8 @@ constexpr std::array<glm::vec2, 3> VERTICES{{
 }};
 
 Triangle::Triangle(Renderer& renderer)
-    : m_program{renderer, Shader{renderer}, {LAYOUT<glm::vec2>}}, m_vertices{renderer, VERTICES} {}
+    : m_program{renderer, Shader{renderer}, {LAYOUT<glm::vec2>}, {}},
+      m_vertices{renderer, VERTICES} {}
 
 void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder) {
   wgpu::RenderPassColorAttachment renderPassColorAttachment{wgpu::Default};

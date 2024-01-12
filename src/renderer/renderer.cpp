@@ -40,10 +40,10 @@ Renderer::Renderer(const Window& window) : instance{wgpu::createInstance(wgpu::D
 }
 
 Renderer::~Renderer() {
-  instance.release();
-  surface.release();
-  device.release();
   queue.release();
+  device.release();
+  surface.release();
+  instance.release();
 }
 
 void Renderer::update(const Window& window) {

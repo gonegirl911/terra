@@ -18,9 +18,9 @@ template <typename T>
 constexpr WGPUVertexFormat FORMAT_OF = FormatOf<T>::VALUE;
 
 template <typename T>
-constexpr T replace(T& dest, T src) {
-  const auto value{dest};
-  dest = src;
+constexpr T replace(T& dst, T src) {
+  const auto value{dst};
+  dst = src;
   return value;
 }
 
