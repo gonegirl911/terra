@@ -1,12 +1,14 @@
 #pragma once
 
 #include <webgpu/webgpu.hpp>
+#include "glm/vec2.hpp"
+#include "renderer/buffer.hpp"
 #include "renderer/program.hpp"
 #include "renderer/renderer.hpp"
 
 class Triangle {
  public:
-  Triangle(Renderer& renderer);
+  explicit Triangle(Renderer& renderer);
   Triangle(const Triangle&) = delete;
   Triangle& operator=(const Triangle&) = delete;
 
@@ -14,4 +16,5 @@ class Triangle {
 
  private:
   Program m_program;
+  VertexBuffer<glm::vec2> m_vertices;
 };

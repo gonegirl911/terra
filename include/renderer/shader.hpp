@@ -4,7 +4,7 @@
 
 class Shader {
  public:
-  Shader(Renderer& renderer);
+  explicit Shader(Renderer& renderer);
   Shader(const Shader&) = delete;
   Shader& operator=(const Shader&) = delete;
   ~Shader();

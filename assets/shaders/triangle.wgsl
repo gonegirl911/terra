@@ -1,5 +1,6 @@
 struct VertexInput {
     @builtin(vertex_index) index: u32,
+    @location(0) coords: vec2<f32>,
 }
 
 struct VertexOutput {
@@ -8,13 +9,7 @@ struct VertexOutput {
 
 @vertex
 fn vs_main(vertex: VertexInput) -> VertexOutput {
-    if vertex.index == 0u {
-        return VertexOutput(vec4(-0.5, -0.5, 0.0, 1.0));
-    } else if vertex.index == 1u {
-        return VertexOutput(vec4(0.5, -0.5, 0.0, 1.0));
-    } else {
-        return VertexOutput(vec4(0.0, 0.5, 0.0, 1.0));
-    }
+    return VertexOutput(vec4(vertex.coords, 0.0, 1.0));
 }
 
 @fragment

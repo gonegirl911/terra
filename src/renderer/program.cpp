@@ -1,9 +1,11 @@
 #include "renderer/program.hpp"
+#include <initializer_list>
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
-Program::Program(Renderer& renderer, wgpu::ShaderModule shader) {
-  wgpu::ColorTargetState colorTargetState{};
+Program::Program(Renderer& renderer, wgpu::ShaderModule shader,
+                 std::initializer_list<wgpu::VertexBufferLayout> buffers) {
+  wgpu::ColorTargetState colorTargetState{wgpu::Default};
   colorTargetState.format = renderer.config.format;
   colorTargetState.writeMask = wgpu::ColorWriteMask::All;
 
@@ -16,6 +18,8 @@ Program::Program(Renderer& renderer, wgpu::ShaderModule shader) {
   wgpu::RenderPipelineDescriptor renderPipelineDesc{wgpu::Default};
   renderPipelineDesc.vertex.module = shader;
   renderPipelineDesc.vertex.entryPoint = "vs_main";
+  renderPipelineDesc.vertex.bufferCount = buffers.size();
+  renderPipelineDesc.vertex.buffers = buffers.begin();
   renderPipelineDesc.fragment = &fragmentState;
   renderPipelineDesc.primitive.cullMode = wgpu::CullMode::Back;
 
@@ -23,7 +27,3 @@ Program::Program(Renderer& renderer, wgpu::ShaderModule shader) {
 }
 
 Program::~Program() { m_renderPipeline.release(); }
-
-void Program::bind(wgpu::RenderPassEncoder renderPass) const {
-  renderPass.setPipeline(m_renderPipeline);
-}
