@@ -6,12 +6,10 @@
 
 Program::Program(Renderer& renderer, wgpu::ShaderModule shader,
                  std::initializer_list<wgpu::VertexBufferLayout> buffers,
-                 std::initializer_list<wgpu::BindGroupLayout> bindGroupLayouts) {
-  const auto layouts = bindGroupLayouts.begin();
-
+                 std::initializer_list<WGPUBindGroupLayout> bindGroupLayouts) {
   wgpu::PipelineLayoutDescriptor pipelineLayoutDesc{wgpu::Default};
   pipelineLayoutDesc.bindGroupLayoutCount = bindGroupLayouts.size();
-  pipelineLayoutDesc.bindGroupLayouts = (WGPUBindGroupLayout*)&layouts;
+  pipelineLayoutDesc.bindGroupLayouts = bindGroupLayouts.begin();
 
   const auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
 

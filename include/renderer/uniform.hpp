@@ -39,7 +39,7 @@ class Uniform {
 
   wgpu::BindGroup bindGroup() const { return m_bindGroup; }
 
-  void set(Renderer& renderer, const T& data) { m_buffer.set(renderer, data); }
+  void set(Renderer& renderer, const T& data) const { m_buffer.set(renderer, data); }
 
  private:
   UniformBuffer<T> m_buffer;

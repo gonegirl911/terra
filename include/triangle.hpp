@@ -8,9 +8,9 @@
 
 class Triangle {
  public:
-  explicit Triangle(Renderer& renderer);
+  explicit Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout);
 
-  void draw(wgpu::TextureView view, wgpu::CommandEncoder encoder);
+  void draw(wgpu::TextureView view, wgpu::CommandEncoder encoder, wgpu::BindGroup cameraBindGroup);
 
  private:
   Program m_program;

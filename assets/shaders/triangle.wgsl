@@ -3,13 +3,20 @@ struct VertexInput {
     @location(0) coords: vec2<f32>,
 }
 
+struct CameraUniform {
+    vp: mat4x4<f32>,
+}
+
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
 }
 
+@group(0) @binding(0)
+var<uniform> camera: CameraUniform;
+
 @vertex
 fn vs_main(vertex: VertexInput) -> VertexOutput {
-    return VertexOutput(vec4(vertex.coords, 0.0, 1.0));
+    return VertexOutput(camera.vp * vec4(vertex.coords, 0.0, 1.0));
 }
 
 @fragment

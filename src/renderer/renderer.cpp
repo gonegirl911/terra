@@ -72,7 +72,7 @@ void Renderer::recreateSurface() { surface.configure(config); }
 wgpu::SurfaceCapabilities Renderer::getCapabilities(wgpu::Adapter adapter) {
   wgpu::SurfaceCapabilities caps;
   surface.getCapabilities(adapter, &caps);
-  if (caps.formatCount == 0 || caps.presentModeCount == 0) {
+  if (!caps.formatCount || !caps.presentModeCount) {
     throw std::runtime_error{"Surface not supported by adapter"};
   }
   return caps;

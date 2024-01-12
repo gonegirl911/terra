@@ -17,6 +17,8 @@ Window::Window() {
   if (glfwRawMouseMotionSupported()) {
     glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
   }
+
+  glfwGetCursorPos(m_window, &m_xpos, &m_ypos);
 }
 
 Window::~Window() { glfwTerminate(); }
@@ -37,16 +39,28 @@ void Window::setMouseButtonCallback(GLFWmousebuttonfun f) const {
   glfwSetMouseButtonCallback(m_window, f);
 }
 
+void Window::setCursorPosCallback(GLFWcursorposfun f) const {
+  glfwSetCursorPosCallback(m_window, f);
+}
+
 void Window::setKeyCallback(GLFWkeyfun f) const { glfwSetKeyCallback(m_window, f); }
 
-void Window::onMouseButton(int button, int action) {
+void Window::onMouseButton(int button, int action) const {
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   }
 }
 
-void Window::onKey(int key, int action) {
+void Window::onKey(int key, int action) const {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   }
+}
+
+std::pair<double, double> Window::onCursorPos(double xpos, double ypos) {
+  const auto dx = xpos - m_xpos;
+  const auto dy = ypos - m_ypos;
+  m_xpos = xpos;
+  m_ypos = ypos;
+  return {dx, dy};
 }

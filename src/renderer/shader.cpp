@@ -28,4 +28,4 @@ Shader::Shader(Renderer& renderer) {
 
 Shader::~Shader() { m_module.release(); }
 
-Shader::operator wgpu::ShaderModule() { return m_module; }
+Shader::operator wgpu::ShaderModule() const { return m_module; }

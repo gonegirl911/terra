@@ -9,7 +9,7 @@ class Shader {
   Shader& operator=(const Shader&) = delete;
   ~Shader();
 
-  operator wgpu::ShaderModule();
+  operator wgpu::ShaderModule() const;
 
  private:
   wgpu::ShaderModule m_module{nullptr};

@@ -12,11 +12,12 @@ constexpr std::array<glm::vec2, 3> VERTICES{{
   {0.0f, 0.5f},
 }};
 
-Triangle::Triangle(Renderer& renderer)
-    : m_program{renderer, Shader{renderer}, {LAYOUT<glm::vec2>}, {}},
+Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
+    : m_program{renderer, Shader{renderer}, {LAYOUT<glm::vec2>}, {cameraBindGroupLayout}},
       m_vertices{renderer, VERTICES} {}
 
-void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder) {
+void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
+                    wgpu::BindGroup cameraBindGroup) {
   wgpu::RenderPassColorAttachment renderPassColorAttachment{wgpu::Default};
   renderPassColorAttachment.view = view;
   renderPassColorAttachment.loadOp = wgpu::LoadOp::Clear;
@@ -28,7 +29,7 @@ void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder) {
   renderPassDesc.colorAttachments = &renderPassColorAttachment;
 
   auto renderPass = encoder.beginRenderPass(renderPassDesc);
-  m_program.bind(renderPass);
+  m_program.bind(renderPass, cameraBindGroup);
   m_vertices.draw(renderPass);
   renderPass.end();
 

@@ -27,7 +27,7 @@ class Buffer {
     m_buffer.release();
   }
 
-  operator wgpu::Buffer() { return m_buffer; }
+  operator wgpu::Buffer() const { return m_buffer; }
 
   std::size_t sizeBytes() { return m_buffer.getSize(); }
 
@@ -67,9 +67,9 @@ class UniformBuffer {
   UniformBuffer(Renderer& renderer)
       : m_buffer{renderer, sizeof(T), wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst} {}
 
-  wgpu::Buffer operator*() { return m_buffer; }
+  wgpu::Buffer operator*() const { return m_buffer; }
 
-  void set(Renderer& renderer, const T& value) {
+  void set(Renderer& renderer, const T& value) const {
     renderer.queue.writeBuffer(m_buffer, 0, &value, sizeof(T));
   }
 

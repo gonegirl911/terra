@@ -23,14 +23,20 @@ class Window {
 
   void setKeyCallback(GLFWkeyfun f) const;
 
-  void onMouseButton(int button, int action);
+  void setCursorPosCallback(GLFWcursorposfun f) const;
 
-  void onKey(int key, int action);
+  void onMouseButton(int button, int action) const;
 
-  void run(std::invocable auto f) const {
-    while (!glfwWindowShouldClose(m_window)) {
-      glfwPollEvents();
-      f();
+  void onKey(int key, int action) const;
+
+  std::pair<double, double> onCursorPos(double xpos, double ypos);
+
+  void run(std::invocable<float> auto f) const {
+    auto prev = glfwGetTime();
+    while (glfwPollEvents(), !glfwWindowShouldClose(m_window)) {
+      const auto now = glfwGetTime();
+      f(now - prev);
+      prev = now;
     }
   }
 
@@ -41,4 +47,6 @@ class Window {
 
  private:
   GLFWwindow* m_window;
+  double m_xpos;
+  double m_ypos;
 };
