@@ -51,9 +51,10 @@ void Window::onMouseButton(int button, int action) const {
   }
 }
 
-void Window::onKey(int key, int action) const {
+void Window::onKey(int key, int action) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwGetCursorPos(m_window, &m_xpos, &m_ypos);
   }
 }
 

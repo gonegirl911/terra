@@ -27,7 +27,7 @@ class Window {
 
   void onMouseButton(int button, int action) const;
 
-  void onKey(int key, int action) const;
+  void onKey(int key, int action);
 
   std::pair<double, double> onCursorPos(double xpos, double ypos);
 
