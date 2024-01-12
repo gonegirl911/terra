@@ -22,12 +22,8 @@ class Camera {
   wgpu::BindGroup bindGroup() const;
 
  private:
-  struct CameraUniformData {
-    glm::mat4 vp;
-  };
-
   View m_view{{0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}};
   Projection m_projection{90.0f, 0.0f, 0.1f, 100.0f};
   Controller m_controller{25.0f, 0.0025f};
-  Uniform<CameraUniformData> m_uniform;
+  Uniform<glm::mat4> m_uniform;
 };

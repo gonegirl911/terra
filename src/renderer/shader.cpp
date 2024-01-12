@@ -7,8 +7,8 @@
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
-std::string readToString(std::filesystem::path path) {
-  auto ifs = std::ifstream{path};
+std::string readToString(const std::filesystem::path& path) {
+  std::ifstream ifs{path};
   ifs.exceptions(std::ios_base::badbit);
   return std::string{std::istreambuf_iterator<char>{ifs}, {}};
 }

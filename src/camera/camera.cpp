@@ -13,7 +13,7 @@ void Camera::update(Renderer& renderer, float dt) {
   }
 
   if (m_controller.applyUpdates(m_view, dt) || renderer.isResized) {
-    m_uniform.set(renderer, {m_projection.matrix() * m_view.matrix()});
+    m_uniform.set(renderer, m_projection.matrix() * m_view.matrix());
   }
 }
 

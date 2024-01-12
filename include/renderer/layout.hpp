@@ -11,15 +11,15 @@ struct FormatOf {};
 
 template <>
 struct FormatOf<glm::vec2> {
-  static constexpr WGPUVertexFormat VALUE = WGPUVertexFormat_Float32x2;
+  static constexpr auto VALUE = WGPUVertexFormat_Float32x2;
 };
 
 template <typename T>
-constexpr WGPUVertexFormat FORMAT_OF = FormatOf<T>::VALUE;
+constexpr auto FORMAT_OF = FormatOf<T>::VALUE;
 
 template <typename T>
 constexpr T replace(T& dst, T src) {
-  const auto value{dst};
+  const auto value = dst;
   dst = src;
   return value;
 }
@@ -34,7 +34,7 @@ constexpr std::array<WGPUVertexAttribute, sizeof...(Ts)> attribs() {
 }
 
 template <typename... Ts>
-constexpr std::array<WGPUVertexAttribute, sizeof...(Ts)> ATTRIBS{attribs<Ts...>()};
+constexpr auto ATTRIBS = attribs<Ts...>();
 
 template <typename... Ts>
 constexpr WGPUVertexBufferLayout layout() {
@@ -47,4 +47,4 @@ constexpr WGPUVertexBufferLayout layout() {
 }
 
 template <typename... Ts>
-constexpr WGPUVertexBufferLayout LAYOUT{layout<Ts...>()};
+constexpr auto LAYOUT = layout<Ts...>();
