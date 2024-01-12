@@ -4,6 +4,7 @@
 #include <ios>
 #include <iterator>
 #include <string>
+#include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
 std::string readToString(std::filesystem::path path) {

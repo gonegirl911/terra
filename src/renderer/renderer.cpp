@@ -1,5 +1,6 @@
 #define WEBGPU_CPP_IMPLEMENTATION
 #include "renderer/renderer.hpp"
+#include <iostream>
 #include <stdexcept>
 #include <webgpu/webgpu.hpp>
 #include "glfw3webgpu.h"

@@ -3,7 +3,6 @@
 #include <webgpu/webgpu.h>
 #include <concepts>
 #include <webgpu/webgpu.hpp>
-#include "GLFW/glfw3.h"
 #include "window.hpp"
 
 class Renderer {
