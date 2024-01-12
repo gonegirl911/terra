@@ -1,6 +1,7 @@
 #pragma once
 
-#include "renderer.hpp"
+#include "renderer/renderer.hpp"
+#include "triangle.hpp"
 #include "window.hpp"
 
 class Application {
@@ -14,6 +15,7 @@ class Application {
  private:
   Window m_window;
   Renderer m_renderer;
+  Triangle m_triangle;
 
   void update();
   void draw();

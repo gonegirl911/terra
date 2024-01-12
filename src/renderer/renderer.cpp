@@ -1,5 +1,5 @@
 #define WEBGPU_CPP_IMPLEMENTATION
-#include "renderer.hpp"
+#include "renderer/renderer.hpp"
 #include <stdexcept>
 #include <webgpu/webgpu.hpp>
 #include "glfw3webgpu.h"
@@ -45,8 +45,6 @@ Renderer::~Renderer() {
   queue.release();
 }
 
-void Renderer::recreateSurface() { surface.configure(config); }
-
 void Renderer::update(const Window& window) {
   if (shouldResize) {
     const auto [width, height] = window.size();
@@ -58,7 +56,7 @@ void Renderer::update(const Window& window) {
 wgpu::SurfaceConfiguration Renderer::getDefaultConfig(const Window& window, wgpu::Adapter adapter) {
   const auto caps = getCapabilities(adapter);
   const auto [width, height] = window.size();
-  wgpu::SurfaceConfiguration config{};
+  wgpu::SurfaceConfiguration config{wgpu::Default};
   config.device = device;
   config.usage = wgpu::TextureUsage::RenderAttachment;
   config.format = caps.formats[0];
@@ -66,6 +64,17 @@ wgpu::SurfaceConfiguration Renderer::getDefaultConfig(const Window& window, wgpu
   config.height = height;
   config.presentMode = caps.presentModes[0];
   return config;
+}
+
+void Renderer::recreateSurface() { surface.configure(config); }
+
+wgpu::SurfaceCapabilities Renderer::getCapabilities(wgpu::Adapter adapter) {
+  wgpu::SurfaceCapabilities caps;
+  surface.getCapabilities(adapter, &caps);
+  if (caps.formatCount == 0 || caps.presentModeCount == 0) {
+    throw std::runtime_error{"Surface not supported by adapter"};
+  }
+  return caps;
 }
 
 bool Renderer::resize(int width, int height) {
@@ -77,13 +86,4 @@ bool Renderer::resize(int width, int height) {
   } else {
     return false;
   }
-}
-
-wgpu::SurfaceCapabilities Renderer::getCapabilities(wgpu::Adapter adapter) {
-  wgpu::SurfaceCapabilities caps;
-  surface.getCapabilities(adapter, &caps);
-  if (caps.formatCount == 0 || caps.presentModeCount == 0) {
-    throw std::runtime_error{"Surface not supported by adapter"};
-  }
-  return caps;
 }
