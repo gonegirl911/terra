@@ -78,8 +78,8 @@ bool Controller::applyUpdates(View& view, float dt) {
 
   if (m_dx || m_dy) {
     applyRotation(view);
-    m_dx = 0.0f;
-    m_dy = 0.0f;
+    m_dx = 0.0;
+    m_dy = 0.0;
     isChanged = true;
   }
 
@@ -103,7 +103,7 @@ void Controller::applyRotation(View& view) {
 
 void Controller::applyMovement(View& view, float dt) {
   glm::vec3 dir{};
-  const auto forward = glm::cross(view.m_right, {0.0f, 1.0f, 0.0f});
+  const auto forward = glm::cross(view.m_right, {0.0, 1.0, 0.0});
 
   if (m_relevantKeys & Key::W) {
     dir += forward;

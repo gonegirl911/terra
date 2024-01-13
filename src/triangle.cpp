@@ -7,10 +7,10 @@
 #include "renderer/shader.hpp"
 
 constexpr std::array<glm::vec2, 4> VERTICES{{
-  {-0.5f, -0.5f},
-  {0.5f, -0.5f},
-  {-0.5f, 0.5f},
-  {0.5f, 0.5f},
+  {-0.5, -0.5},
+  {0.5, -0.5},
+  {-0.5, 0.5},
+  {0.5, 0.5},
 }};
 
 Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
@@ -25,7 +25,7 @@ void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
   wgpu::RenderPassColorAttachment renderPassColorAttachment{wgpu::Default};
   renderPassColorAttachment.view = view;
   renderPassColorAttachment.loadOp = wgpu::LoadOp::Clear;
-  renderPassColorAttachment.clearValue = wgpu::Color{0.9, 0.1, 0.2, 1.0};
+  renderPassColorAttachment.clearValue = {0.9, 0.1, 0.2, 1.0};
   renderPassColorAttachment.storeOp = wgpu::StoreOp::Store;
 
   wgpu::RenderPassDescriptor renderPassDesc{wgpu::Default};

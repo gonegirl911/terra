@@ -23,8 +23,8 @@ class Camera {
   wgpu::BindGroup bindGroup() const;
 
  private:
-  View m_view{{0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}};
-  Projection m_projection{90.0f, 0.0f, 0.1f, 100.0f};
-  Controller m_controller{25.0f, 0.0025f};
+  View m_view{{0.0, 0.0, -1.0}, {0.0, 0.0, 1.0}};
+  Projection m_projection{90.0, 0.0, 0.1, 100.0};
+  Controller m_controller{25.0, 0.0025};
   Uniform<glm::mat4> m_uniform;
 };

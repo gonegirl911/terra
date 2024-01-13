@@ -14,8 +14,8 @@ class Controller {
   bool applyUpdates(View& view, float dt);
 
  private:
-  float m_dx = 0.0f;
-  float m_dy = 0.0f;
+  float m_dx{};
+  float m_dy{};
   std::uint8_t m_relevantKeys{};
   std::uint8_t m_keyHistory{};
   float m_speed;

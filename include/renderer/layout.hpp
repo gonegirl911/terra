@@ -26,8 +26,8 @@ constexpr T replace(T& dst, T src) {
 
 template <typename... Ts>
 constexpr std::array<WGPUVertexAttribute, sizeof...(Ts)> attribs() {
-  std::size_t offset = 0;
-  std::uint32_t location = 0;
+  std::size_t offset{};
+  std::uint32_t location{};
   return {{{.format = FORMAT_OF<Ts>,
             .offset = replace(offset, offset + sizeof(Ts)),
             .shaderLocation = location++}...}};

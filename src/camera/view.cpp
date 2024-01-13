@@ -15,10 +15,10 @@ View::View(glm::vec3 origin, glm::vec3 dir)
 glm::mat4 View::matrix() const {
   // clang-format off
   return {
-    m_right.x, m_up.x, m_forward.x, 0.0f,
-    m_right.y, m_up.y, m_forward.y, 0.0f,
-    m_right.z, m_up.z, m_forward.z, 0.0f,
-    -glm::dot(m_origin, m_right), -glm::dot(m_origin, m_up), -glm::dot(m_origin, m_forward), 1.0f,
+    m_right.x, m_up.x, m_forward.x, 0.0,
+    m_right.y, m_up.y, m_forward.y, 0.0,
+    m_right.z, m_up.z, m_forward.z, 0.0,
+    -glm::dot(m_origin, m_right), -glm::dot(m_origin, m_up), -glm::dot(m_origin, m_forward), 1.0,
   };
   // clang-format on
 }
@@ -32,7 +32,7 @@ glm::vec3 View::forward(float yaw, float pitch) {
 }
 
 glm::vec3 View::right(glm::vec3 forward) {
-  return glm::normalize(glm::cross({0.0f, 1.0f, 0.0f}, forward));
+  return glm::normalize(glm::cross({0.0, 1.0, 0.0}, forward));
 }
 
 glm::vec3 View::up(glm::vec3 forward, glm::vec3 right) { return glm::cross(forward, right); }

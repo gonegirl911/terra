@@ -12,7 +12,7 @@ class Renderer {
   wgpu::Device device{nullptr};
   wgpu::Queue queue{nullptr};
   wgpu::SurfaceConfiguration config;
-  bool isResized = false;
+  bool isResized{};
 
   explicit Renderer(const Window& window);
   Renderer(const Renderer&) = delete;

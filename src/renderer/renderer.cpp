@@ -79,7 +79,7 @@ wgpu::SurfaceCapabilities Renderer::getCapabilities(wgpu::Adapter adapter) {
 }
 
 bool Renderer::resize(int width, int height) {
-  if (width != 0 && height != 0) {
+  if (width && height) {
     config.width = width;
     config.height = height;
     recreateSurface();
