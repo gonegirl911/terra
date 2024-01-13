@@ -18,5 +18,6 @@ class Application {
   Triangle m_triangle;
 
   void update(float dt);
+
   void draw();
 };

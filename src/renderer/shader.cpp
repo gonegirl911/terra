@@ -7,14 +7,14 @@
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
-std::string readToString(const std::filesystem::path& path) {
+std::string readToString(const fs::path& path) {
   std::ifstream ifs{path};
   ifs.exceptions(std::ios_base::badbit);
   return std::string{std::istreambuf_iterator<char>{ifs}, {}};
 }
 
-Shader::Shader(Renderer& renderer) {
-  const auto src = readToString("../assets/shaders/triangle.wgsl");
+Shader::Shader(Renderer& renderer, const fs::path& path) {
+  const auto src = readToString(path);
 
   wgpu::ShaderModuleWGSLDescriptor srcDesc{wgpu::Default};
   srcDesc.chain.sType = wgpu::SType::ShaderModuleWGSLDescriptor;

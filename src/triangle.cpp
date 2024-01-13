@@ -14,7 +14,10 @@ constexpr std::array<glm::vec2, 4> VERTICES{{
 }};
 
 Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
-    : m_program{renderer, Shader{renderer}, {LAYOUT<glm::vec2>}, {cameraBindGroupLayout}},
+    : m_program{renderer,
+                Shader{renderer, "../assets/shaders/triangle.wgsl"},
+                {LAYOUT<glm::vec2>},
+                {cameraBindGroupLayout}},
       m_vertices{renderer, VERTICES} {}
 
 void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
