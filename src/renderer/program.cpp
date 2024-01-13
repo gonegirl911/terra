@@ -11,7 +11,7 @@ Program::Program(Renderer& renderer, wgpu::ShaderModule shader,
   pipelineLayoutDesc.bindGroupLayoutCount = bindGroupLayouts.size();
   pipelineLayoutDesc.bindGroupLayouts = bindGroupLayouts.begin();
 
-  const auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
+  auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
 
   wgpu::ColorTargetState colorTargetState{wgpu::Default};
   colorTargetState.format = renderer.config.format;
@@ -34,6 +34,8 @@ Program::Program(Renderer& renderer, wgpu::ShaderModule shader,
   renderPipelineDesc.fragment = &fragmentState;
 
   m_renderPipeline = renderer.device.createRenderPipeline(renderPipelineDesc);
+
+  pipelineLayout.release();
 }
 
 Program::~Program() { m_renderPipeline.release(); }
