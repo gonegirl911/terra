@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstring>
 #include <span>
 #include <webgpu/webgpu.hpp>

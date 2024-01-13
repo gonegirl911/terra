@@ -2,6 +2,7 @@
 
 #include <webgpu/webgpu.hpp>
 #include "renderer/buffer.hpp"
+#include "renderer/renderer.hpp"
 
 template <typename T>
 class Uniform {

@@ -1,4 +1,5 @@
 #include "camera/controller.hpp"
+#include <cstdint>
 #include "GLFW/glfw3.h"
 #include "camera/view.hpp"
 #include "glm/common.hpp"
@@ -6,6 +7,17 @@
 #include "glm/ext/vector_float3.hpp"
 #include "glm/geometric.hpp"
 #include "glm/gtc/constants.hpp"
+
+struct Key {
+  enum : std::uint8_t {
+    W = 1 << 0,
+    A = 1 << 1,
+    S = 1 << 2,
+    D = 1 << 3,
+    Space = 1 << 4,
+    LShift = 1 << 5,
+  };
+};
 
 Controller::Controller(float speed, float sensitivity)
     : m_speed{speed}, m_sensitivity{sensitivity} {}
@@ -16,33 +28,33 @@ void Controller::onCursorPos(double dx, double dy) {
 }
 
 void Controller::onKey(int key, int action) {
-  Keys value;
-  Keys opp;
+  std::uint8_t value;
+  std::uint8_t opp;
 
   switch (key) {
     case GLFW_KEY_W:
-      value = Keys::W;
-      opp = Keys::S;
+      value = Key::W;
+      opp = Key::S;
       break;
     case GLFW_KEY_A:
-      value = Keys::A;
-      opp = Keys::D;
+      value = Key::A;
+      opp = Key::D;
       break;
     case GLFW_KEY_S:
-      value = Keys::S;
-      opp = Keys::W;
+      value = Key::S;
+      opp = Key::W;
       break;
     case GLFW_KEY_D:
-      value = Keys::D;
-      opp = Keys::A;
+      value = Key::D;
+      opp = Key::A;
       break;
     case GLFW_KEY_SPACE:
-      value = Keys::Space;
-      opp = Keys::LShift;
+      value = Key::Space;
+      opp = Key::LShift;
       break;
     case GLFW_KEY_LEFT_SHIFT:
-      value = Keys::LShift;
-      opp = Keys::Space;
+      value = Key::LShift;
+      opp = Key::Space;
       break;
     default:
       return;
@@ -93,21 +105,21 @@ void Controller::applyMovement(View& view, float dt) {
   glm::vec3 dir{};
   const auto forward = glm::cross(view.m_right, {0.0f, 1.0f, 0.0f});
 
-  if (m_relevantKeys & Keys::W) {
+  if (m_relevantKeys & Key::W) {
     dir += forward;
-  } else if (m_relevantKeys & Keys::S) {
+  } else if (m_relevantKeys & Key::S) {
     dir -= forward;
   }
 
-  if (m_relevantKeys & Keys::A) {
+  if (m_relevantKeys & Key::A) {
     dir -= view.m_right;
-  } else if (m_relevantKeys & Keys::D) {
+  } else if (m_relevantKeys & Key::D) {
     dir += view.m_right;
   }
 
-  if (m_relevantKeys & Keys::Space) {
+  if (m_relevantKeys & Key::Space) {
     ++dir.y;
-  } else if (m_relevantKeys & Keys::LShift) {
+  } else if (m_relevantKeys & Key::LShift) {
     --dir.y;
   }
 

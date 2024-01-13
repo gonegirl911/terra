@@ -26,7 +26,7 @@ class Renderer {
     surface.getCurrentTexture(&texture);
     switch (texture.status) {
       case WGPUSurfaceGetCurrentTextureStatus_Success: {
-        auto view = wgpuTextureCreateView(texture.texture, nullptr);
+        const auto view = wgpuTextureCreateView(texture.texture, nullptr);
         auto encoder = device.createCommandEncoder(wgpu::Default);
         f(view, encoder);
         queue.submit(encoder.finish());

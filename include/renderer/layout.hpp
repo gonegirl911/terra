@@ -4,7 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include "glm/vec2.hpp"
+#include "glm/ext/vector_float2.hpp"
 
 template <typename T>
 struct FormatOf {};

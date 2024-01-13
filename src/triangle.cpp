@@ -1,7 +1,7 @@
 #include "triangle.hpp"
 #include <array>
 #include <webgpu/webgpu.hpp>
-#include "glm/vec2.hpp"
+#include "glm/ext/vector_float2.hpp"
 #include "renderer/layout.hpp"
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"

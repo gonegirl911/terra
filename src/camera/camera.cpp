@@ -1,5 +1,6 @@
 #include "camera/camera.hpp"
 #include <webgpu/webgpu.hpp>
+#include "renderer/renderer.hpp"
 
 Camera::Camera(Renderer& renderer) : m_uniform{renderer, wgpu::ShaderStage::Vertex} {}
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <webgpu/webgpu.hpp>
 #include "camera/controller.hpp"
 #include "camera/projection.hpp"
 #include "camera/view.hpp"
