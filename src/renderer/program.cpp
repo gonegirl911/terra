@@ -29,8 +29,9 @@ Program::Program(Renderer& renderer, wgpu::ShaderModule shader,
   renderPipelineDesc.vertex.entryPoint = "vs_main";
   renderPipelineDesc.vertex.bufferCount = buffers.size();
   renderPipelineDesc.vertex.buffers = buffers.begin();
-  renderPipelineDesc.fragment = &fragmentState;
+  renderPipelineDesc.primitive.topology = wgpu::PrimitiveTopology::TriangleStrip;
   renderPipelineDesc.primitive.cullMode = wgpu::CullMode::Back;
+  renderPipelineDesc.fragment = &fragmentState;
 
   m_renderPipeline = renderer.device.createRenderPipeline(renderPipelineDesc);
 }

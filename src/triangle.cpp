@@ -6,10 +6,11 @@
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 
-constexpr std::array<glm::vec2, 3> VERTICES{{
+constexpr std::array<glm::vec2, 4> VERTICES{{
   {-0.5f, -0.5f},
   {0.5f, -0.5f},
-  {0.0f, 0.5f},
+  {-0.5f, 0.5f},
+  {0.5f, 0.5f},
 }};
 
 Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
