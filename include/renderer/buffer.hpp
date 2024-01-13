@@ -10,9 +10,9 @@ template <typename T>
 class Buffer {
  public:
   Buffer(Renderer& renderer, std::span<const T> data, wgpu::BufferUsageFlags usage)
-      : Buffer{renderer, data.size_bytes(), usage, true} {
-    const auto size = sizeBytes();
-    std::memcpy(m_buffer.getMappedRange(0, size), data.data(), size);
+      : Buffer{renderer, data.size(), usage, true} {
+    const auto sizeBytes = data.size_bytes();
+    std::memcpy(m_buffer.getMappedRange(0, sizeBytes), data.data(), sizeBytes);
     m_buffer.unmap();
   }
 
@@ -30,9 +30,9 @@ class Buffer {
 
   operator wgpu::Buffer() const { return m_buffer; }
 
-  std::size_t sizeBytes() { return m_buffer.getSize(); }
-
   std::size_t size() { return sizeBytes() / sizeof(T); }
+
+  std::size_t sizeBytes() { return m_buffer.getSize(); }
 
  private:
   wgpu::Buffer m_buffer{nullptr};
@@ -40,7 +40,7 @@ class Buffer {
   Buffer(Renderer& renderer, std::size_t size, wgpu::BufferUsageFlags usage,
          bool mappedAtCreation) {
     wgpu::BufferDescriptor desc{wgpu::Default};
-    desc.size = size;
+    desc.size = size * sizeof(T);
     desc.usage = usage;
     desc.mappedAtCreation = mappedAtCreation;
     m_buffer = renderer.device.createBuffer(desc);
@@ -66,7 +66,7 @@ template <typename T>
 class UniformBuffer {
  public:
   UniformBuffer(Renderer& renderer)
-      : m_buffer{renderer, sizeof(T), wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst} {}
+      : m_buffer{renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst} {}
 
   wgpu::Buffer operator*() const { return m_buffer; }
 
