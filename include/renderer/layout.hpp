@@ -37,14 +37,9 @@ template <typename... Ts>
 constexpr auto ATTRIBS = attribs<Ts...>();
 
 template <typename... Ts>
-constexpr WGPUVertexBufferLayout layout() {
-  WGPUVertexBufferLayout layout{};
-  layout.arrayStride = (sizeof(Ts) + ...);
-  layout.stepMode = WGPUVertexStepMode_Vertex;
-  layout.attributeCount = sizeof...(Ts);
-  layout.attributes = ATTRIBS<Ts...>.data();
-  return layout;
-}
-
-template <typename... Ts>
-constexpr auto LAYOUT = layout<Ts...>();
+constexpr WGPUVertexBufferLayout LAYOUT{
+  .arrayStride = (sizeof(Ts) + ...),
+  .stepMode = WGPUVertexStepMode_Vertex,
+  .attributeCount = sizeof...(Ts),
+  .attributes = ATTRIBS<Ts...>.data(),
+};

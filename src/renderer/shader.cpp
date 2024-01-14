@@ -10,7 +10,7 @@
 std::string readToString(const fs::path& path) {
   std::ifstream ifs{path};
   ifs.exceptions(std::ios_base::badbit);
-  return std::string{std::istreambuf_iterator{ifs}, {}};
+  return {std::istreambuf_iterator{ifs}, {}};
 }
 
 Shader::Shader(Renderer& renderer, const fs::path& path) {

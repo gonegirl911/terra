@@ -16,8 +16,8 @@ class Program {
   Program& operator=(const Program&) = delete;
   ~Program();
 
-  template <std::same_as<wgpu::BindGroup>... T>
-  void bind(wgpu::RenderPassEncoder renderPass, T... bindGroups) const {
+  void bind(wgpu::RenderPassEncoder renderPass,
+            std::same_as<wgpu::BindGroup> auto... bindGroups) const {
     renderPass.setPipeline(m_renderPipeline);
     std::size_t i{};
     (renderPass.setBindGroup(i++, bindGroups, 0, nullptr), ...);

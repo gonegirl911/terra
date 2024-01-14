@@ -45,7 +45,7 @@ class Renderer {
   }
 
  private:
-  bool shouldResize = true;
+  bool shouldResize{true};
 
   wgpu::SurfaceConfiguration getDefaultConfig(const Window& window, wgpu::Adapter adapter);
 
