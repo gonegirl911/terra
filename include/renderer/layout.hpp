@@ -15,7 +15,7 @@ struct FormatOf<glm::vec2> {
 };
 
 template <typename T>
-constexpr auto FORMAT_OF = FormatOf<T>::VALUE;
+inline constexpr auto FORMAT_OF = FormatOf<T>::VALUE;
 
 template <typename T>
 constexpr T replace(T& dst, T src) {
@@ -34,10 +34,10 @@ constexpr std::array<WGPUVertexAttribute, sizeof...(Ts)> attribs() {
 }
 
 template <typename... Ts>
-constexpr auto ATTRIBS = attribs<Ts...>();
+inline constexpr auto ATTRIBS = attribs<Ts...>();
 
 template <typename... Ts>
-constexpr WGPUVertexBufferLayout LAYOUT{
+inline constexpr WGPUVertexBufferLayout LAYOUT{
   .arrayStride = (sizeof(Ts) + ...),
   .stepMode = WGPUVertexStepMode_Vertex,
   .attributeCount = sizeof...(Ts),
