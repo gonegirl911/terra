@@ -13,9 +13,6 @@ FetchContent_Declare(glfw3webgpu GIT_REPOSITORY https://github.com/eliemichel/gl
 FetchContent_Declare(glm GIT_REPOSITORY https://github.com/g-truc/glm.git)
 FetchContent_MakeAvailable(glfw webgpu glfw3webgpu glm)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw webgpu glfw3webgpu glm::glm)
-add_custom_target(assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets
-                                                                    ${CMAKE_BINARY_DIR}/assets)
-add_dependencies(${PROJECT_NAME} assets)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
@@ -26,3 +23,6 @@ else()
 endif()
 
 target_copy_webgpu_binaries(${PROJECT_NAME})
+add_custom_target(assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets
+                                                                    ${CMAKE_BINARY_DIR}/assets)
+add_dependencies(${PROJECT_NAME} assets)
