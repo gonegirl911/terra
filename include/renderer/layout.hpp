@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 #include "glm/ext/vector_float2.hpp"
 
 template <typename T>
@@ -17,10 +18,10 @@ struct FormatOf<glm::vec2> {
 template <typename T>
 inline constexpr auto FORMAT_OF = FormatOf<T>::VALUE;
 
-template <typename T>
-constexpr T replace(T& dst, T src) {
-  const auto value = dst;
-  dst = src;
+template <typename T, typename U>
+constexpr T replace(T& dst, U&& src) {
+  const auto value = std::move(dst);
+  dst = std::forward<U>(src);
   return value;
 }
 
