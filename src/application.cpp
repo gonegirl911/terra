@@ -6,17 +6,21 @@ Application::Application()
       m_camera{m_renderer},
       m_triangle{m_renderer, m_camera.bindGroupLayout()} {
   m_window.setUserData(*this);
+
   m_window.setResizeCallback([](auto window, auto, auto) {
     Window::getUserData<Application>(window).m_renderer.shouldResize = true;
   });
+
   m_window.setMouseButtonCallback([](auto window, auto key, auto action, auto) {
     Window::getUserData<Application>(window).m_window.onMouseButton(key, action);
   });
+
   m_window.setKeyCallback([](auto window, auto key, auto, auto action, auto) {
     auto& application = Window::getUserData<Application>(window);
     application.m_window.onKey(key, action);
     application.m_camera.onKey(key, action);
   });
+
   m_window.setCursorPosCallback([](auto window, auto xpos, auto ypos) {
     auto& application = Window::getUserData<Application>(window);
     const auto [dx, dy] = application.m_window.onCursorPos(xpos, ypos);
