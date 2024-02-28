@@ -5,13 +5,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <utility>
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float3.hpp"
 
 template <typename T>
 struct FormatOf {};
 
 template <>
-struct FormatOf<glm::vec2> {
+struct FormatOf<glm::vec3> {
   static constexpr auto VALUE = WGPUVertexFormat_Float32x2;
 };
 

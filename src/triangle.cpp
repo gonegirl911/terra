@@ -1,22 +1,24 @@
 #include "triangle.hpp"
 #include <array>
 #include <webgpu/webgpu.hpp>
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "renderer/layout.hpp"
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 
-constexpr std::array<glm::vec2, 4> VERTICES{{
-  {-0.5, -0.5},
-  {0.5, -0.5},
-  {-0.5, 0.5},
-  {0.5, 0.5},
+constexpr std::array<glm::vec3, 6> VERTICES{{
+  {-0.5, -0.5, 0.0},
+  {0.5, -0.5, 0.0},
+  {-0.5, 0.5, 0.0},
+  {0.5, -0.5, 0.0},
+  {0.5, 0.5, 0.0},
+  {-0.5, 0.5, 0.0},
 }};
 
 Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
     : m_program{renderer,
                 Shader{renderer, "../assets/shaders/triangle.wgsl"},
-                {LAYOUT<glm::vec2>},
+                {LAYOUT<glm::vec3>},
                 {cameraBindGroupLayout}},
       m_vertices{renderer, VERTICES} {}
 
@@ -25,7 +27,6 @@ void Triangle::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
   wgpu::RenderPassColorAttachment renderPassColorAttachment{wgpu::Default};
   renderPassColorAttachment.view = view;
   renderPassColorAttachment.loadOp = wgpu::LoadOp::Clear;
-  renderPassColorAttachment.clearValue = {0.9, 0.1, 0.2, 1.0};
   renderPassColorAttachment.storeOp = wgpu::StoreOp::Store;
 
   wgpu::RenderPassDescriptor renderPassDesc{wgpu::Default};
