@@ -12,7 +12,7 @@ struct FormatOf {};
 
 template <>
 struct FormatOf<glm::vec3> {
-  static constexpr auto VALUE = WGPUVertexFormat_Float32x2;
+  static constexpr auto VALUE = WGPUVertexFormat_Float32x3;
 };
 
 template <typename T>

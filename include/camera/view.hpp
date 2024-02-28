@@ -7,6 +7,8 @@ class View {
  public:
   View(glm::vec3 origin, glm::vec3 dir);
 
+  glm::vec3 origin() const;
+
   glm::mat4 matrix() const;
 
  private:

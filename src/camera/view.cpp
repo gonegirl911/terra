@@ -12,13 +12,15 @@ View::View(glm::vec3 origin, glm::vec3 dir)
       m_yaw{glm::atan(m_forward.z, m_forward.x)},
       m_pitch{glm::asin(m_forward.y)} {}
 
+glm::vec3 View::origin() const { return m_origin; }
+
 glm::mat4 View::matrix() const {
   // clang-format off
   return {
     m_right.x, m_up.x, m_forward.x, 0.0,
     m_right.y, m_up.y, m_forward.y, 0.0,
     m_right.z, m_up.z, m_forward.z, 0.0,
-    -glm::dot(m_origin, m_right), -glm::dot(m_origin, m_up), -glm::dot(m_origin, m_forward), 1.0,
+    0.0, 0.0, 0.0, 1.0,
   };
   // clang-format on
 }

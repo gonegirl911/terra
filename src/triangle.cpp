@@ -6,19 +6,19 @@
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 
-constexpr std::array<glm::vec3, 6> VERTICES{{
-  {-0.5, -0.5, 0.0},
-  {0.5, -0.5, 0.0},
-  {-0.5, 0.5, 0.0},
-  {0.5, -0.5, 0.0},
-  {0.5, 0.5, 0.0},
-  {-0.5, 0.5, 0.0},
+constexpr std::array<TriangleVertex, 6> VERTICES{{
+  {{-0.5, 0.0, -0.5}, {0.0, 1.0, 0.0}},
+  {{0.5, 0.0, -0.5}, {0.0, 1.0, 0.0}},
+  {{-0.5, 0.0, 0.5}, {0.0, 1.0, 0.0}},
+  {{0.5, 0.0, -0.5}, {0.0, 1.0, 0.0}},
+  {{0.5, 0.0, 0.5}, {0.0, 1.0, 0.0}},
+  {{-0.5, 0.0, 0.5}, {0.0, 1.0, 0.0}},
 }};
 
 Triangle::Triangle(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
     : m_program{renderer,
                 Shader{renderer, "../assets/shaders/triangle.wgsl"},
-                {LAYOUT<glm::vec3>},
+                {TriangleVertex::DESC},
                 {cameraBindGroupLayout}},
       m_vertices{renderer, VERTICES} {}
 

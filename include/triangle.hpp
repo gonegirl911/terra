@@ -3,8 +3,16 @@
 #include <webgpu/webgpu.hpp>
 #include "glm/ext/vector_float3.hpp"
 #include "renderer/buffer.hpp"
+#include "renderer/layout.hpp"
 #include "renderer/program.hpp"
 #include "renderer/renderer.hpp"
+
+struct TriangleVertex {
+  glm::vec3 coords;
+  glm::vec3 normal;
+
+  static constexpr auto DESC = LAYOUT<glm::vec3, glm::vec3>;
+};
 
 class Triangle {
  public:
@@ -14,5 +22,5 @@ class Triangle {
 
  private:
   Program m_program;
-  VertexBuffer<glm::vec3> m_vertices;
+  VertexBuffer<TriangleVertex> m_vertices;
 };
