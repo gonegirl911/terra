@@ -1,10 +1,11 @@
 #include "application.hpp"
+#include "window.hpp"
 
 Application::Application()
     : m_window{},
       m_renderer{m_window},
       m_camera{m_renderer},
-      m_triangle{m_renderer, m_camera.bindGroupLayout()} {
+      m_terrain{m_renderer, m_camera.bindGroupLayout()} {
   m_window.setUserData(*this);
 
   m_window.setResizeCallback([](auto window, auto, auto) {
@@ -43,7 +44,7 @@ void Application::update(float dt) {
 void Application::draw() {
   // clang-format off
   m_renderer.draw([&](auto view, auto encoder) {
-    m_triangle.draw(view, encoder, m_camera.bindGroup());
+    m_terrain.draw(view, encoder, m_camera.bindGroup());
   });
   // clang-format on
 }

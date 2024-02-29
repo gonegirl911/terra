@@ -2,7 +2,7 @@
 
 #include "camera/camera.hpp"
 #include "renderer/renderer.hpp"
-#include "triangle.hpp"
+#include "terrain.hpp"
 #include "window.hpp"
 
 class Application {
@@ -15,7 +15,7 @@ class Application {
   Window m_window;
   Renderer m_renderer;
   Camera m_camera;
-  Triangle m_triangle;
+  Terrain m_terrain;
 
   void update(float dt);
 

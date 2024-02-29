@@ -11,7 +11,6 @@ class Uniform {
     wgpu::BindGroupLayoutEntry bindGroupLayoutEntry{wgpu::Default};
     bindGroupLayoutEntry.visibility = visibility;
     bindGroupLayoutEntry.buffer.type = wgpu::BufferBindingType::Uniform;
-    bindGroupLayoutEntry.buffer.minBindingSize = sizeof(T);
 
     wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{wgpu::Default};
     bindGroupLayoutDesc.entryCount = 1;
@@ -21,7 +20,7 @@ class Uniform {
 
     wgpu::BindGroupEntry bindGroupEntry{wgpu::Default};
     bindGroupEntry.buffer = *m_buffer;
-    bindGroupEntry.size = sizeof(T);
+    bindGroupEntry.size = m_buffer.sizeBytes();
 
     wgpu::BindGroupDescriptor bindGroupDesc{wgpu::Default};
     bindGroupDesc.layout = m_bindGroupLayout;
