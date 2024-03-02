@@ -5,35 +5,13 @@ class DepthBuffer {
  public:
   static constexpr auto FORMAT = wgpu::TextureFormat::Depth32Float;
 
-  explicit DepthBuffer(Renderer& renderer) {
-    wgpu::TextureDescriptor textureDesc{wgpu::Default};
-    textureDesc.size = {renderer.config.width, renderer.config.height, 1};
-    textureDesc.mipLevelCount = 1;
-    textureDesc.sampleCount = 1;
-    textureDesc.dimension = wgpu::TextureDimension::_2D;
-    textureDesc.format = FORMAT;
-    textureDesc.usage = wgpu::TextureUsage::RenderAttachment;
-
-    m_texture = renderer.device.createTexture(textureDesc);
-
-    wgpu::TextureViewDescriptor textureViewDesc{wgpu::Default};
-    textureViewDesc.mipLevelCount = textureDesc.mipLevelCount;
-    textureViewDesc.arrayLayerCount = 1;
-
-    m_view = m_texture.createView(textureViewDesc);
-  }
-
+  explicit DepthBuffer(Renderer& renderer);
   DepthBuffer(const DepthBuffer&) = delete;
-
   DepthBuffer& operator=(const DepthBuffer&) = delete;
+  DepthBuffer& operator=(DepthBuffer&& other);
+  ~DepthBuffer();
 
-  ~DepthBuffer() {
-    m_view.release();
-    m_texture.destroy();
-    m_texture.release();
-  }
-
-  wgpu::TextureView view() const { return m_view; }
+  wgpu::TextureView view() const;
 
  private:
   wgpu::Texture m_texture{nullptr};

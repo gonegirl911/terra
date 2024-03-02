@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <span>
 #include <tuple>
@@ -73,11 +74,13 @@ class BufferGroup {
     init(renderer, wgpu::BufferBindingType::ReadOnlyStorage);
   }
 
-  BufferGroup(Renderer& renderer, std::size_t size, wgpu::BufferUsageFlags usage)
-    requires (sizeof...(Ts) == 1)
-      : m_buffers{make{[&] {
-          return Buffer<Ts>{renderer, size, usage | wgpu::BufferUsage::Storage};
-        }}...} {
+  BufferGroup(Renderer& renderer, std::array<std::size_t, sizeof...(Ts)> sizes,
+              std::array<wgpu::BufferUsageFlags, sizeof...(Ts)> usages)
+      : m_buffers{[&]<std::size_t... Is>(std::index_sequence<Is...>) {
+          return std::tuple{make{[&] {
+            return Buffer<Ts>{renderer, sizes[Is], usages[Is] | wgpu::BufferUsage::Storage};
+          }}...};
+        }(std::make_index_sequence<sizeof...(Ts)>{})} {
     init(renderer, wgpu::BufferBindingType::Storage);
   }
 
@@ -86,27 +89,24 @@ class BufferGroup {
     m_bindGroupLayout.release();
   }
 
-  operator wgpu::Buffer() const
-    requires (sizeof...(Ts) == 1)
-  {
-    return std::get<0>(m_buffers);
+  template <std::size_t Index>
+  wgpu::Buffer get() const {
+    return std::get<Index>(m_buffers);
+  }
+
+  template <std::size_t Index>
+  std::size_t size() {
+    return std::get<Index>(m_buffers).size();
+  }
+
+  template <std::size_t Index>
+  std::size_t sizeBytes() {
+    return std::get<Index>(m_buffers).sizeBytes();
   }
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }
 
   wgpu::BindGroup bindGroup() const { return m_bindGroup; }
-
-  std::size_t size()
-    requires (sizeof...(Ts) == 1)
-  {
-    return std::get<0>(m_buffers).size();
-  }
-
-  std::size_t sizeBytes()
-    requires (sizeof...(Ts) == 1)
-  {
-    return std::get<0>(m_buffers).sizeBytes();
-  }
 
  private:
   std::tuple<Buffer<Ts>...> m_buffers;
@@ -153,19 +153,20 @@ template <typename T>
 class VertexBuffer {
  public:
   VertexBuffer(Renderer& renderer, std::size_t size)
-      : m_buffer{renderer, size, wgpu::BufferUsage::Vertex} {}
+      : m_buffers{renderer, {size}, {wgpu::BufferUsage::Vertex}} {}
 
-  wgpu::BindGroupLayout bindGroupLayout() const { return m_buffer.bindGroupLayout(); }
+  wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
-  wgpu::BindGroup bindGroup() const { return m_buffer.bindGroup(); }
+  wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
 
   void draw(wgpu::RenderPassEncoder renderPass) {
-    renderPass.setVertexBuffer(0, m_buffer, 0, m_buffer.sizeBytes());
-    renderPass.draw(m_buffer.size(), 1, 0, 0);
+    renderPass.setVertexBuffer(0, m_buffers.template get<0>(), 0,
+                               m_buffers.template sizeBytes<0>());
+    renderPass.draw(m_buffers.template size<0>(), 1, 0, 0);
   }
 
  private:
-  BufferGroup<T> m_buffer;
+  BufferGroup<T> m_buffers;
 };
 
 template <typename T>

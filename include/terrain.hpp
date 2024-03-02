@@ -22,6 +22,8 @@ class Terrain {
  public:
   Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout);
 
+  void update(Renderer& renderer);
+
   void draw(wgpu::TextureView view, wgpu::CommandEncoder encoder, wgpu::BindGroup cameraBindGroup);
 
  private:

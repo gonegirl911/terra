@@ -304,6 +304,12 @@ Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout
                 {cameraBindGroupLayout}},
       m_depthBuffer{renderer} {}
 
+void Terrain::update(Renderer& renderer) {
+  if (renderer.isResized) {
+    m_depthBuffer = DepthBuffer{renderer};
+  }
+}
+
 void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
                    wgpu::BindGroup cameraBindGroup) {
   if (m_shouldGenerate) {

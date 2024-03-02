@@ -39,6 +39,7 @@ void Application::run() {
 void Application::update(float dt) {
   m_renderer.update(m_window);
   m_camera.update(m_renderer, dt);
+  m_terrain.update(m_renderer);
 }
 
 void Application::draw() {
