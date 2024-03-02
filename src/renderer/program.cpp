@@ -3,6 +3,7 @@
 #include <initializer_list>
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
+#include "renderer/texture.hpp"
 
 ComputeProgram::ComputeProgram(Renderer& renderer, wgpu::ShaderModule shader,
                                std::initializer_list<WGPUBindGroupLayout> bindGroupLayouts) {
@@ -33,6 +34,11 @@ RenderProgram::RenderProgram(Renderer& renderer, wgpu::ShaderModule shader,
 
   auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
 
+  wgpu::DepthStencilState depthStencilState{wgpu::Default};
+  depthStencilState.format = DepthBuffer::FORMAT;
+  depthStencilState.depthWriteEnabled = true;
+  depthStencilState.depthCompare = wgpu::CompareFunction::Less;
+
   wgpu::ColorTargetState colorTargetState{wgpu::Default};
   colorTargetState.format = renderer.config.format;
   colorTargetState.writeMask = wgpu::ColorWriteMask::All;
@@ -50,6 +56,7 @@ RenderProgram::RenderProgram(Renderer& renderer, wgpu::ShaderModule shader,
   renderPipelineDesc.vertex.bufferCount = buffers.size();
   renderPipelineDesc.vertex.buffers = buffers.begin();
   renderPipelineDesc.primitive.cullMode = wgpu::CullMode::Back;
+  renderPipelineDesc.depthStencil = &depthStencilState;
   renderPipelineDesc.fragment = &fragmentState;
 
   m_renderPipeline = renderer.device.createRenderPipeline(renderPipelineDesc);

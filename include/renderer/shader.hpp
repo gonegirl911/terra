@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 class Shader {
  public:
-  explicit Shader(Renderer& renderer, const fs::path& path);
+  Shader(Renderer& renderer, const fs::path& path);
   Shader(const Shader&) = delete;
   Shader& operator=(const Shader&) = delete;
   ~Shader();

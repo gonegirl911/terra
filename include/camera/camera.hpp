@@ -17,7 +17,7 @@ struct CameraUniformData {
 
 class Camera {
  public:
-  Camera(Renderer& renderer);
+  explicit Camera(Renderer& renderer);
 
   void onCursorPos(double dx, double dy);
 
@@ -30,7 +30,7 @@ class Camera {
   wgpu::BindGroup bindGroup() const;
 
  private:
-  View m_view{{0.0, 1.62, -1.0}, {0.0, 0.0, 1.0}};
+  View m_view{{0.0, 1.62, -32.0}, {0.0, 0.0, 1.0}};
   Projection m_projection{90.0, 0.0, 0.1, 100.0};
   Controller m_controller{25.0, 0.0025};
   Uniform<CameraUniformData> m_uniform;
