@@ -27,7 +27,7 @@ class Terrain {
   void draw(wgpu::TextureView view, wgpu::CommandEncoder encoder, wgpu::BindGroup cameraBindGroup);
 
  private:
-  BufferGroup<glm::ivec3, std::array<std::int32_t, 15>, std::array<std::uint32_t, 2>> m_tables;
+  BufferGroup<glm::ivec3, std::array<std::int32_t, 16>, std::array<std::uint32_t, 2>> m_tables;
   VertexBuffer<TerrainVertex> m_vertices;
   ComputeProgram m_generator;
   RenderProgram m_program;

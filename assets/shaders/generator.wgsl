@@ -7,7 +7,7 @@ struct TerrainVertex {
 var<storage, read> corner_deltas: array<array<i32, 3>, 8>;
 
 @group(0) @binding(1)
-var<storage, read> triangulations: array<array<i32, 15>, 256>;
+var<storage, read> triangulations: array<array<i32, 16>, 256>;
 
 @group(0) @binding(2)
 var<storage, read> edge_corners: array<array<u32, 2>, 12>;
@@ -15,13 +15,17 @@ var<storage, read> edge_corners: array<array<u32, 2>, 12>;
 @group(1) @binding(0)
 var<storage, read_write> vertices: array<TerrainVertex>;
 
+@group(1) @binding(1)
+var<storage, read_write> size: atomic<u32>;
+
 @compute @workgroup_size(4, 4, 4)
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let coords = vec3<i32>(id) - 16;
-    let index = (id.x * 32u * 32u + id.y * 32u + id.z) * 15u;
     let edges = &triangulations[config(coords)];
+    let count = u32((*edges)[15]);
+    let index = atomicAdd(&size, count);
 
-    for (var i = 0u; i < 15u && (*edges)[i] != -1; i += 3u) {
+    for (var i = 0u; i < count; i += 3u) {
         let p0 = point(coords, edge_corners[((*edges)[i])]);
         let p1 = point(coords, edge_corners[((*edges)[i + 1u])]);
         let p2 = point(coords, edge_corners[((*edges)[i + 2u])]);
