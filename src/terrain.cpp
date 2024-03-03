@@ -3,11 +3,10 @@
 #include <cstdint>
 #include <webgpu/webgpu.hpp>
 #include "glm/ext/vector_float3.hpp"
-#include "glm/ext/vector_int3.hpp"
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 
-constexpr std::array<glm::ivec3, 8> CORNER_DELTAS{{
+constexpr std::array<glm::vec3, 8> CORNER_DELTAS{{
   {0, 0, 1},
   {1, 0, 1},
   {1, 0, 0},
