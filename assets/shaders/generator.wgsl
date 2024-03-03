@@ -40,7 +40,7 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
 fn config(coords: vec3<i32>) -> u32 {
     var config = 0u;
     for (var i = 0u; i < 8u; i++) {
-        config |= u32(value(coords + delta(i)) < 0) << i;
+        config |= u32(density(coords + delta(i)) < 0) << i;
     }
     return config;
 }
@@ -57,7 +57,7 @@ fn delta(corner: u32) -> vec3<i32> {
     return to_vec(corner_deltas[corner]);
 }
 
-fn value(coords: vec3<i32>) -> i32 {
+fn density(coords: vec3<i32>) -> i32 {
     return dot(coords, coords) - 16 * 16;
 }
 
@@ -66,8 +66,8 @@ fn f(coords: vec3<i32>) -> vec3<f32> {
 }
 
 fn inv_lerp(coords: vec3<i32>, corners: array<u32, 2>) -> vec3<f32> {
-    let a = f32(value(coords + delta(corners[0])));
-    let b = f32(value(coords + delta(corners[1])));
+    let a = f32(density(coords + delta(corners[0])));
+    let b = f32(density(coords + delta(corners[1])));
     return vec3(-a / (b - a));
 }
 
