@@ -65,14 +65,14 @@ fn ao(coords: vec3<f32>) -> f32 {
         let dir = to_vec(ray_dirs[ray]);
         var visibility = 1.0;
 
-        for (var step = 1; step <= 12; step++) {
-            let density = density(coords + dir * f32(step) / 2.0);
-            visibility *= saturate(density * 80.0);
+        for (var step = 1; step <= 16; step++) {
+            let density = density(coords + dir * f32(step) / 4.0);
+            visibility *= saturate(density * 100.0);
         }
 
         for (var step = 1; step <= 4; step++) {
-            let density = density(coords + dir * f32(step) * 2.0);
-            visibility *= saturate(density * 5.0);
+            let density = density(coords + dir * f32(step) * 4.0);
+            visibility *= saturate(density * 10.0);
         }
 
         accum += visibility;
@@ -103,8 +103,6 @@ fn to_vec(values: array<f32, 3>) -> vec3<f32> {
     return vec3(values[0], values[1], values[2]);
 }
 
-// ----------------------------------------------------------------------
-
 fn simplex3(coords: vec3<f32>) -> f32 {
     let s = floor(coords + dot(coords, vec3(FRAC_1_3)));
     let x = coords - s + dot(s, vec3(FRAC_1_6));
@@ -117,34 +115,26 @@ fn simplex3(coords: vec3<f32>) -> f32 {
     let x1 = x - i1 + 2.0 * FRAC_1_6;
     let x2 = x - 1.0 + 3.0 * FRAC_1_6;
 
-    var w = vec4(dot(x, x), dot(x0, x0), dot(x1, x1), dot(x2, x2));
-
-    w = max(0.6 - w, vec4(0.0));
-
-    var d = vec4(
+    let weights = max(0.6 - vec4(dot(x, x), dot(x0, x0), dot(x1, x1), dot(x2, x2)), vec4(0.0));
+    let surflets = vec4(
         dot(random3(s), x),
         dot(random3(s + i0), x0),
         dot(random3(s + i1), x1),
         dot(random3(s + 1.0), x2),
     );
 
-    w *= w;
-    w *= w;
-    d *= w;
-
-    return dot(d, vec4(52.0));
+    return dot(surflets * pow2(pow2(weights)), vec4(52.0));
 }
 
 fn random3(coords: vec3<f32>) -> vec3<f32> {
-    var j = 4096.0 * sin(dot(coords, vec3(17.0, 59.4, 15.0)));
-    var r = vec3(0.0);
-    r.z = fract(512.0 * j);
-    j *= .125;
-    r.x = fract(512.0 * j);
-    j *= .125;
-    r.y = fract(512.0 * j);
-    return r - 0.5;
+    let base = vec3(1u << 18u, 1u << 15u, 1u << 21u);
+    let r = sin(dot(coords, vec3(17.0, 59.4, 15.0)));
+    return fract(vec3<f32>(base) * r) - 0.5;
 }
 
-const FRAC_1_3 = 0.3333333;
-const FRAC_1_6 = 0.1666667;
+fn pow2(values: vec4<f32>) -> vec4<f32> {
+    return values * values;
+}
+
+const FRAC_1_3 = 1.0 / 3.0;
+const FRAC_1_6 = 1.0 / 6.0;
