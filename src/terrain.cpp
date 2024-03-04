@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <webgpu/webgpu.hpp>
 #include "glm/ext/vector_float3.hpp"
+#include "glm/ext/vector_uint2.hpp"
 #include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 
@@ -276,7 +277,7 @@ constexpr std::array<std::array<std::int32_t, 16>, 256> TRIANGULATIONS{{
   {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0},
 }};
 
-constexpr std::array<std::array<std::uint32_t, 2>, 12> EDGE_CORNERS{{
+constexpr std::array<glm::uvec2, 12> EDGE_CORNERS{{
   {0, 1},
   {1, 2},
   {2, 3},
@@ -291,9 +292,46 @@ constexpr std::array<std::array<std::uint32_t, 2>, 12> EDGE_CORNERS{{
   {3, 7},
 }};
 
+// clang-format off
+constexpr std::array<glm::vec3, 32> RAY_DIRS{{
+  {0.286582, 0.257763, -0.922729},
+  {-0.171812, -0.888079, 0.426375},
+  {0.440764, -0.502089, -0.744066},
+  {-0.841007, -0.428818, -0.329882},
+  {-0.380213, -0.588038, -0.713898},
+  {-0.055393, -0.207160, -0.976738},
+  {-0.901510, -0.077811, 0.425706},
+  {-0.974593, 0.123830, -0.186643},
+  {0.208042, -0.524280, 0.825741},
+  {0.258429, -0.898570, -0.354663},
+  {-0.262118, 0.574475, -0.775418},
+  {0.735212, 0.551820, 0.393646},
+  {0.828700, -0.523923, -0.196877},
+  {0.788742, 0.005727, -0.614698},
+  {-0.696885, 0.649338, -0.304486},
+  {-0.625313, 0.082413, -0.776010},
+  {0.358696, 0.928723, 0.093864},
+  {0.188264, 0.628978, 0.754283},
+  {-0.495193, 0.294596, 0.817311},
+  {0.818889, 0.508670, -0.265851},
+  {0.027189, 0.057757, 0.997960},
+  {-0.188421, 0.961802, -0.198582},
+  {0.995439, 0.019982, 0.093282},
+  {-0.315254, -0.925345, -0.210596},
+  {0.411992, -0.877706, 0.244733},
+  {0.625857, 0.080059, 0.775818},
+  {-0.243839, 0.866185, 0.436194},
+  {-0.725464, -0.643645, 0.243768},
+  {0.766785, -0.430702, 0.475959},
+  {-0.446376, -0.391664, 0.804580},
+  {-0.761557, 0.562508, 0.321895},
+  {0.344460, 0.753223, -0.560359},
+}};
+// clang-format on
+
 Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
-    : m_tables{renderer, CORNER_DELTAS, TRIANGULATIONS, EDGE_CORNERS},
-      m_vertices{renderer, 28536},
+    : m_tables{renderer, CORNER_DELTAS, TRIANGULATIONS, EDGE_CORNERS, RAY_DIRS},
+      m_vertices{renderer, 30000},
       m_generator{renderer,
                   Shader{renderer, "../assets/shaders/generator.wgsl"},
                   {m_tables.bindGroupLayout(), m_vertices.bindGroupLayout()}},

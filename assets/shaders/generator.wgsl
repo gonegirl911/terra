@@ -1,6 +1,7 @@
 struct TerrainVertex {
     coords: array<f32, 3>,
     normal: array<f32, 3>,
+    ao: f32,
 }
 
 @group(0) @binding(0)
@@ -12,6 +13,9 @@ var<storage, read> triangulations: array<array<i32, 16>, 256>;
 @group(0) @binding(2)
 var<storage, read> edge_corners: array<array<u32, 2>, 12>;
 
+@group(0) @binding(3)
+var<storage, read> ray_dirs: array<array<f32, 3>>;
+
 @group(1) @binding(0)
 var<storage, read_write> vertices: array<TerrainVertex>;
 
@@ -20,7 +24,7 @@ var<storage, read_write> size: atomic<u32>;
 
 @compute @workgroup_size(4, 4, 4)
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-    let coords = vec3<f32>(id) - 16.0;
+    let coords = vec3<f32>(id);
     let edges = &triangulations[config(coords)];
     let count = u32((*edges)[15]);
     let index = atomicAdd(&size, count);
@@ -28,8 +32,9 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     for (var i = 0u; i < count; i++) {
         let coords = coords(coords, edge_corners[((*edges)[i])]);
         let normal = normal(coords);
+        let ao = ao(coords);
 
-        vertices[index + i] = TerrainVertex(to_array(coords), to_array(normal));
+        vertices[index + i] = TerrainVertex(to_array(coords), to_array(normal), ao);
     }
 }
 
@@ -53,6 +58,29 @@ fn normal(coords: vec3<f32>) -> vec3<f32> {
     ));
 }
 
+fn ao(coords: vec3<f32>) -> f32 {
+    var accum = 0.0;
+
+    for (var ray = 0u; ray < arrayLength(&ray_dirs); ray++) {
+        let dir = to_vec(ray_dirs[ray]);
+        var visibility = 1.0;
+
+        for (var step = 1; step <= 12; step++) {
+            let density = density(coords + dir * f32(step) / 2.0);
+            visibility *= saturate(density * 80.0);
+        }
+
+        for (var step = 1; step <= 4; step++) {
+            let density = density(coords + dir * f32(step) * 2.0);
+            visibility *= saturate(density * 5.0);
+        }
+
+        accum += visibility;
+    }
+
+    return accum / f32(arrayLength(&ray_dirs));
+}
+
 fn to_array(values: vec3<f32>) -> array<f32, 3> {
     return array<f32, 3>(values.x, values.y, values.z);
 }
@@ -62,7 +90,7 @@ fn delta(corner: u32) -> vec3<f32> {
 }
 
 fn density(coords: vec3<f32>) -> f32 {
-    return dot(coords, coords) - 16.0 * 16.0;
+    return simplex3(coords / 32.0);
 }
 
 fn inv_lerp(coords: vec3<f32>, corners: array<u32, 2>) -> vec3<f32> {
@@ -74,3 +102,49 @@ fn inv_lerp(coords: vec3<f32>, corners: array<u32, 2>) -> vec3<f32> {
 fn to_vec(values: array<f32, 3>) -> vec3<f32> {
     return vec3(values[0], values[1], values[2]);
 }
+
+// ----------------------------------------------------------------------
+
+fn simplex3(coords: vec3<f32>) -> f32 {
+    let s = floor(coords + dot(coords, vec3(FRAC_1_3)));
+    let x = coords - s + dot(s, vec3(FRAC_1_6));
+
+    let e = step(vec3(0.0), x - x.yzx);
+    let i0 = e * (1.0 - e.zxy);
+    let i1 = 1.0 - e.zxy * (1.0 - e);
+
+    let x0 = x - i0 + FRAC_1_6;
+    let x1 = x - i1 + 2.0 * FRAC_1_6;
+    let x2 = x - 1.0 + 3.0 * FRAC_1_6;
+
+    var w = vec4(dot(x, x), dot(x0, x0), dot(x1, x1), dot(x2, x2));
+
+    w = max(0.6 - w, vec4(0.0));
+
+    var d = vec4(
+        dot(random3(s), x),
+        dot(random3(s + i0), x0),
+        dot(random3(s + i1), x1),
+        dot(random3(s + 1.0), x2),
+    );
+
+    w *= w;
+    w *= w;
+    d *= w;
+
+    return dot(d, vec4(52.0));
+}
+
+fn random3(coords: vec3<f32>) -> vec3<f32> {
+    var j = 4096.0 * sin(dot(coords, vec3(17.0, 59.4, 15.0)));
+    var r = vec3(0.0);
+    r.z = fract(512.0 * j);
+    j *= .125;
+    r.x = fract(512.0 * j);
+    j *= .125;
+    r.y = fract(512.0 * j);
+    return r - 0.5;
+}
+
+const FRAC_1_3 = 0.3333333;
+const FRAC_1_6 = 0.1666667;

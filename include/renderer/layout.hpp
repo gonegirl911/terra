@@ -15,6 +15,11 @@ struct FormatOf<glm::vec3> {
   static constexpr auto VALUE = WGPUVertexFormat_Float32x3;
 };
 
+template <>
+struct FormatOf<float> {
+  static constexpr auto VALUE = WGPUVertexFormat_Float32;
+};
+
 template <typename T>
 inline constexpr auto FORMAT_OF = FormatOf<T>::VALUE;
 

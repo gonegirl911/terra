@@ -153,7 +153,7 @@ template <typename T>
 class VertexBuffer {
  public:
   VertexBuffer(Renderer& renderer, std::size_t size)
-      : m_buffers{renderer, {size, 1}, {wgpu::BufferUsage::Vertex, wgpu::BufferUsage::None}} {}
+      : m_buffers{renderer, {size, 1}, {wgpu::BufferUsage::Vertex, 0}} {}
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
