@@ -112,8 +112,8 @@ fn simplex3(coords: vec3<f32>) -> f32 {
     let i1 = 1.0 - e.zxy * (1.0 - e);
 
     let x0 = x - i0 + FRAC_1_6;
-    let x1 = x - i1 + 2.0 * FRAC_1_6;
-    let x2 = x - 1.0 + 3.0 * FRAC_1_6;
+    let x1 = x - i1 + FRAC_1_3;
+    let x2 = x - 0.5;
 
     let weights = max(0.6 - vec4(dot(x, x), dot(x0, x0), dot(x1, x1), dot(x2, x2)), vec4(0.0));
     let surflets = vec4(
