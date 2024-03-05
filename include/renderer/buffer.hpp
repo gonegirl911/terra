@@ -155,13 +155,14 @@ class VertexBuffer {
   VertexBuffer(Renderer& renderer, std::size_t size)
       : m_buffers{renderer, {size, 1}, {wgpu::BufferUsage::Vertex, 0}} {}
 
+  std::size_t sizeBytes() { return m_buffers.template sizeBytes<0>(); }
+
   wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
   wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
 
   void draw(wgpu::RenderPassEncoder renderPass) {
-    renderPass.setVertexBuffer(0, m_buffers.template get<0>(), 0,
-                               m_buffers.template sizeBytes<0>());
+    renderPass.setVertexBuffer(0, m_buffers.template get<0>(), 0, sizeBytes());
     renderPass.draw(m_buffers.template size<0>(), 1, 0, 0);
   }
 

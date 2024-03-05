@@ -30,10 +30,11 @@ class Terrain {
  private:
   BufferGroup<glm::vec3, std::array<std::int32_t, 16>, glm::uvec2, glm::vec3> m_tables;
   VertexBuffer<TerrainVertex> m_vertices;
+  ComputeProgram m_clear;
   ComputeProgram m_generator;
   RenderProgram m_program;
   DepthBuffer m_depthBuffer;
   bool m_shouldGenerate{true};
 
-  void generate(wgpu::CommandEncoder encoder) const;
+  void generate(wgpu::CommandEncoder ComputePassEncoder) const;
 };

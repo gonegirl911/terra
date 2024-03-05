@@ -331,7 +331,9 @@ constexpr std::array<glm::vec3, 32> RAY_DIRS{{
 
 Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
     : m_tables{renderer, CORNER_DELTAS, TRIANGULATIONS, EDGE_CORNERS, RAY_DIRS},
-      m_vertices{renderer, 30000},
+      m_vertices{renderer, 1933312},
+      m_clear{
+        renderer, Shader{renderer, "../assets/shaders/clear.wgsl"}, {m_vertices.bindGroupLayout()}},
       m_generator{renderer,
                   Shader{renderer, "../assets/shaders/generator.wgsl"},
                   {m_tables.bindGroupLayout(), m_vertices.bindGroupLayout()}},
@@ -381,7 +383,7 @@ void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
 void Terrain::generate(wgpu::CommandEncoder encoder) const {
   auto computePass = encoder.beginComputePass(wgpu::Default);
   m_generator.bind(computePass, m_tables.bindGroup(), m_vertices.bindGroup());
-  computePass.dispatchWorkgroups(8, 8, 8);
+  computePass.dispatchWorkgroups(32, 32, 32);
   computePass.end();
   computePass.release();
 }

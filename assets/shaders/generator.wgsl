@@ -107,7 +107,7 @@ fn simplex3(coords: vec3<f32>) -> f32 {
     let s = floor(coords + dot(coords, vec3(FRAC_1_3)));
     let x = coords - s + dot(s, vec3(FRAC_1_6));
 
-    let e = step(vec3(0.0), x - x.yzx);
+    let e = e(x);
     let i0 = e * (1.0 - e.zxy);
     let i1 = 1.0 - e.zxy * (1.0 - e);
 
@@ -124,6 +124,12 @@ fn simplex3(coords: vec3<f32>) -> f32 {
     );
 
     return dot(surflets * pow2(pow2(weights)), vec4(52.0));
+}
+
+fn e(x: vec3<f32>) -> vec3<f32> {
+    var e = step(vec3(0.0), x - x.yzx);
+    e.z = min(e.z, 3.0 - dot(e, vec3(1.0)));
+    return e;
 }
 
 fn random3(coords: vec3<f32>) -> vec3<f32> {
