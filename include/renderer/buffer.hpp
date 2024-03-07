@@ -25,11 +25,15 @@ class Buffer {
 
   Buffer(const Buffer&) = delete;
 
+  Buffer(Buffer&& other) { std::swap(m_buffer, other.m_buffer); }
+
   Buffer& operator=(const Buffer&) = delete;
 
   ~Buffer() {
-    m_buffer.destroy();
-    m_buffer.release();
+    if (m_buffer) {
+      m_buffer.destroy();
+      m_buffer.release();
+    }
   }
 
   operator wgpu::Buffer() const { return m_buffer; }
@@ -53,35 +57,44 @@ class Buffer {
   }
 };
 
-template <typename F>
-class make {
- public:
-  make(F&& f) : f{std::forward<F>(f)} {}
-
-  operator auto() { return f(); }
-
- private:
-  F f;
-};
-
 template <typename... Ts>
 class BufferGroup {
  public:
-  BufferGroup(Renderer& renderer, std::span<const Ts>... data)
-      : m_buffers{make{[&] {
-          return Buffer<Ts>{renderer, data, wgpu::BufferUsage::Storage};
-        }}...} {
-    init(renderer, wgpu::BufferBindingType::ReadOnlyStorage);
-  }
+  BufferGroup(Renderer& renderer, Buffer<Ts>&&... buffers, wgpu::ShaderStageFlags visibility,
+              wgpu::BufferBindingType type)
+      : m_buffers{std::forward<Buffer<Ts>>(buffers)...} {
+    const auto bindGroupLayoutEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+      return std::array{[&] {
+        wgpu::BindGroupLayoutEntry entry{wgpu::Default};
+        entry.binding = Is;
+        entry.visibility = visibility;
+        entry.buffer.type = type;
+        return entry;
+      }()...};
+    }(std::make_index_sequence<sizeof...(Ts)>{});
 
-  BufferGroup(Renderer& renderer, std::array<std::size_t, sizeof...(Ts)> sizes,
-              std::array<wgpu::BufferUsageFlags, sizeof...(Ts)> usages)
-      : m_buffers{[&]<std::size_t... Is>(std::index_sequence<Is...>) {
-          return std::tuple{make{[&] {
-            return Buffer<Ts>{renderer, sizes[Is], usages[Is] | wgpu::BufferUsage::Storage};
-          }}...};
-        }(std::make_index_sequence<sizeof...(Ts)>{})} {
-    init(renderer, wgpu::BufferBindingType::Storage);
+    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{wgpu::Default};
+    bindGroupLayoutDesc.entryCount = bindGroupLayoutEntries.size();
+    bindGroupLayoutDesc.entries = bindGroupLayoutEntries.data();
+
+    m_bindGroupLayout = renderer.device.createBindGroupLayout(bindGroupLayoutDesc);
+
+    const auto bindGroupEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+      return std::array{[&] {
+        wgpu::BindGroupEntry entry{wgpu::Default};
+        entry.binding = Is;
+        entry.buffer = *std::get<Is>(m_buffers);
+        entry.size = std::get<Is>(m_buffers).sizeBytes();
+        return entry;
+      }()...};
+    }(std::make_index_sequence<sizeof...(Ts)>{});
+
+    wgpu::BindGroupDescriptor bindGroupDesc{wgpu::Default};
+    bindGroupDesc.layout = m_bindGroupLayout;
+    bindGroupDesc.entryCount = bindGroupLayoutDesc.entryCount;
+    bindGroupDesc.entries = bindGroupEntries.data();
+
+    m_bindGroup = renderer.device.createBindGroup(bindGroupDesc);
   }
 
   ~BufferGroup() {
@@ -112,48 +125,36 @@ class BufferGroup {
   std::tuple<Buffer<Ts>...> m_buffers;
   wgpu::BindGroupLayout m_bindGroupLayout{nullptr};
   wgpu::BindGroup m_bindGroup{nullptr};
+};
 
-  void init(Renderer& renderer, wgpu::BufferBindingType type) {
-    const auto bindGroupLayoutEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-      return std::array{[&] {
-        wgpu::BindGroupLayoutEntry entry{wgpu::Default};
-        entry.binding = Is;
-        entry.visibility = wgpu::ShaderStage::Compute;
-        entry.buffer.type = type;
-        return entry;
-      }()...};
-    }(std::make_index_sequence<sizeof...(Ts)>{});
+template <typename... Ts>
+class ConstantGroup {
+ public:
+  ConstantGroup(Renderer& renderer, std::span<const Ts>... data)
+      : m_buffers{
+          renderer,
+          {renderer, data, wgpu::BufferUsage::Storage}...,
+          wgpu::ShaderStage::Compute,
+          wgpu::BufferBindingType::ReadOnlyStorage,
+        } {}
 
-    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{wgpu::Default};
-    bindGroupLayoutDesc.entryCount = bindGroupLayoutEntries.size();
-    bindGroupLayoutDesc.entries = bindGroupLayoutEntries.data();
+  wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
-    m_bindGroupLayout = renderer.device.createBindGroupLayout(bindGroupLayoutDesc);
+  wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
 
-    const auto bindGroupEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-      return std::array{[&] {
-        wgpu::BindGroupEntry entry{wgpu::Default};
-        entry.binding = Is;
-        entry.buffer = *std::get<Is>(m_buffers);
-        entry.size = std::get<Is>(m_buffers).sizeBytes();
-        return entry;
-      }()...};
-    }(std::make_index_sequence<sizeof...(Ts)>{});
-
-    wgpu::BindGroupDescriptor bindGroupDesc{wgpu::Default};
-    bindGroupDesc.layout = m_bindGroupLayout;
-    bindGroupDesc.entryCount = bindGroupLayoutDesc.entryCount;
-    bindGroupDesc.entries = bindGroupEntries.data();
-
-    m_bindGroup = renderer.device.createBindGroup(bindGroupDesc);
-  }
+ private:
+  BufferGroup<Ts...> m_buffers;
 };
 
 template <typename T>
 class VertexBuffer {
  public:
   VertexBuffer(Renderer& renderer, std::size_t size)
-      : m_buffers{renderer, {size, 1}, {wgpu::BufferUsage::Vertex, 0}} {}
+      : m_buffers{renderer,
+                  {renderer, size, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::Storage},
+                  {renderer, 1, wgpu::BufferUsage::Storage},
+                  wgpu::ShaderStage::Compute,
+                  wgpu::BufferBindingType::Storage} {}
 
   std::size_t sizeBytes() { return m_buffers.template sizeBytes<0>(); }
 
@@ -171,19 +172,22 @@ class VertexBuffer {
 };
 
 template <typename T>
-class UniformBuffer {
+class Uniform {
  public:
-  explicit UniformBuffer(Renderer& renderer)
-      : m_buffer{renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst} {}
+  Uniform(Renderer& renderer, wgpu::ShaderStageFlags visibility)
+      : m_buffers{renderer,
+                  {renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst},
+                  visibility,
+                  wgpu::BufferBindingType::Uniform} {}
 
-  wgpu::Buffer operator*() const { return m_buffer; }
+  wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
-  std::size_t sizeBytes() { return m_buffer.sizeBytes(); }
+  wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
 
   void set(Renderer& renderer, const T& value) const {
-    renderer.queue.writeBuffer(m_buffer, 0, &value, sizeof(T));
+    renderer.queue.writeBuffer(m_buffers.template get<0>(), 0, &value, sizeof(T));
   }
 
  private:
-  Buffer<T> m_buffer;
+  BufferGroup<T> m_buffers;
 };

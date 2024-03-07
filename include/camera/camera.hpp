@@ -6,8 +6,8 @@
 #include "camera/view.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float3.hpp"
+#include "renderer/buffer.hpp"
 #include "renderer/renderer.hpp"
-#include "renderer/uniform.hpp"
 
 struct CameraUniformData {
   glm::mat4 vp;
