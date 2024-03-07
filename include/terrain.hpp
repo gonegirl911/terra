@@ -36,5 +36,5 @@ class Terrain {
   DepthBuffer m_depthBuffer;
   bool m_shouldGenerate{true};
 
-  void generate(wgpu::CommandEncoder ComputePassEncoder) const;
+  void generate(wgpu::CommandEncoder ComputePassEncoder, wgpu::BindGroup cameraBindGroup) const;
 };

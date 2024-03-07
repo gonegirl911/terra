@@ -152,9 +152,9 @@ class ConstantGroup {
 template <typename T>
 class VertexBuffer {
  public:
-  VertexBuffer(Renderer& renderer, glm::vec4 coords, std::size_t size)
+  VertexBuffer(Renderer& renderer, glm::vec4 chunkDelta, std::size_t size)
       : m_buffers{renderer,
-                  {renderer, {&coords, 1}, wgpu::BufferUsage::Uniform},
+                  {renderer, {&chunkDelta, 1}, wgpu::BufferUsage::Uniform},
                   {renderer, size, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::Storage},
                   {renderer, 1, wgpu::BufferUsage::Storage},
                   wgpu::ShaderStage::Compute,

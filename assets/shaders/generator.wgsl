@@ -1,3 +1,8 @@
+struct CameraUniform {
+    vp: mat4x4<f32>,
+    origin: vec3<f32>,
+}
+
 struct TerrainVertex {
     coords: array<f32, 3>,
     normal: array<f32, 3>,
@@ -17,17 +22,20 @@ var<storage, read> edge_corners: array<array<u32, 2>, 12>;
 var<storage, read> ray_dirs: array<array<f32, 3>>;
 
 @group(1) @binding(0)
-var<uniform> chunk_coords: vec3<f32>;
+var<uniform> camera: CameraUniform;
 
-@group(1) @binding(1)
+@group(2) @binding(0)
+var<uniform> chunk_delta: vec3<f32>;
+
+@group(2) @binding(1)
 var<storage, read_write> vertices: array<TerrainVertex>;
 
-@group(1) @binding(2)
+@group(2) @binding(2)
 var<storage, read_write> size: atomic<u32>;
 
 @compute @workgroup_size(4, 4, 4)
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-    let coords = chunk_coords * 32.0 + vec3<f32>(id);
+    let coords = chunk_delta * 32.0 + vec3<f32>(id);
     let edges = &triangulations[config(coords)];
     let count = u32((*edges)[15]);
     let index = atomicAdd(&size, count);
