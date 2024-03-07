@@ -1,6 +1,3 @@
-@group(0) @binding(0)
-var<uniform> chunk_coords: vec3<f32>;
-
 @group(0) @binding(1)
 var<storage, read_write> vertices: array<u32>;
 

@@ -5,26 +5,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/texture.hpp"
 
-ComputeProgram::ComputeProgram(Renderer& renderer, wgpu::ShaderModule shader,
-                               std::initializer_list<WGPUBindGroupLayout> bindGroupLayouts) {
-  wgpu::PipelineLayoutDescriptor pipelineLayoutDesc{wgpu::Default};
-  pipelineLayoutDesc.bindGroupLayoutCount = bindGroupLayouts.size();
-  pipelineLayoutDesc.bindGroupLayouts = bindGroupLayouts.begin();
-
-  auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
-
-  wgpu::ComputePipelineDescriptor computePipelineDesc{wgpu::Default};
-  computePipelineDesc.layout = pipelineLayout;
-  computePipelineDesc.compute.module = shader;
-  computePipelineDesc.compute.entryPoint = "main";
-
-  m_computePipeline = renderer.device.createComputePipeline(computePipelineDesc);
-
-  pipelineLayout.release();
-}
-
-ComputeProgram::~ComputeProgram() { m_computePipeline.release(); }
-
 RenderProgram::RenderProgram(Renderer& renderer, wgpu::ShaderModule shader,
                              std::initializer_list<wgpu::VertexBufferLayout> buffers,
                              std::initializer_list<WGPUBindGroupLayout> bindGroupLayouts) {
@@ -65,3 +45,23 @@ RenderProgram::RenderProgram(Renderer& renderer, wgpu::ShaderModule shader,
 }
 
 RenderProgram::~RenderProgram() { m_renderPipeline.release(); }
+
+ComputeProgram::ComputeProgram(Renderer& renderer, wgpu::ShaderModule shader,
+                               std::initializer_list<WGPUBindGroupLayout> bindGroupLayouts) {
+  wgpu::PipelineLayoutDescriptor pipelineLayoutDesc{wgpu::Default};
+  pipelineLayoutDesc.bindGroupLayoutCount = bindGroupLayouts.size();
+  pipelineLayoutDesc.bindGroupLayouts = bindGroupLayouts.begin();
+
+  auto pipelineLayout = renderer.device.createPipelineLayout(pipelineLayoutDesc);
+
+  wgpu::ComputePipelineDescriptor computePipelineDesc{wgpu::Default};
+  computePipelineDesc.layout = pipelineLayout;
+  computePipelineDesc.compute.module = shader;
+  computePipelineDesc.compute.entryPoint = "main";
+
+  m_computePipeline = renderer.device.createComputePipeline(computePipelineDesc);
+
+  pipelineLayout.release();
+}
+
+ComputeProgram::~ComputeProgram() { m_computePipeline.release(); }
