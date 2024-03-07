@@ -136,7 +136,7 @@ class ConstantGroup {
           renderer,
           {renderer, data, wgpu::BufferUsage::Storage}...,
           wgpu::ShaderStage::Compute,
-          {[]<typename T>() {
+          {[]<typename T> {
             return wgpu::BufferBindingType::ReadOnlyStorage;
           }.template operator()<Ts>()...},
         } {}
