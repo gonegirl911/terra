@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 #include <webgpu/webgpu.hpp>
+#include "glm/ext/vector_float4.hpp"
 #include "renderer.hpp"
 
 template <typename T>
@@ -61,14 +62,14 @@ template <typename... Ts>
 class BufferGroup {
  public:
   BufferGroup(Renderer& renderer, Buffer<Ts>&&... buffers, wgpu::ShaderStageFlags visibility,
-              wgpu::BufferBindingType type)
+              std::array<wgpu::BufferBindingType, sizeof...(Ts)> types)
       : m_buffers{std::forward<Buffer<Ts>>(buffers)...} {
     const auto bindGroupLayoutEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
       return std::array{[&] {
         wgpu::BindGroupLayoutEntry entry{wgpu::Default};
         entry.binding = Is;
         entry.visibility = visibility;
-        entry.buffer.type = type;
+        entry.buffer.type = types[Is];
         return entry;
       }()...};
     }(std::make_index_sequence<sizeof...(Ts)>{});
@@ -135,7 +136,9 @@ class ConstantGroup {
           renderer,
           {renderer, data, wgpu::BufferUsage::Storage}...,
           wgpu::ShaderStage::Compute,
-          wgpu::BufferBindingType::ReadOnlyStorage,
+          {[]<typename T>() {
+            return wgpu::BufferBindingType::ReadOnlyStorage;
+          }.template operator()<Ts>()...},
         } {}
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
@@ -149,26 +152,28 @@ class ConstantGroup {
 template <typename T>
 class VertexBuffer {
  public:
-  VertexBuffer(Renderer& renderer, std::size_t size)
+  VertexBuffer(Renderer& renderer, glm::vec4 coords, std::size_t size)
       : m_buffers{renderer,
+                  {renderer, {&coords, 1}, wgpu::BufferUsage::Uniform},
                   {renderer, size, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::Storage},
                   {renderer, 1, wgpu::BufferUsage::Storage},
                   wgpu::ShaderStage::Compute,
-                  wgpu::BufferBindingType::Storage} {}
+                  {wgpu::BufferBindingType::Uniform, wgpu::BufferBindingType::Storage,
+                   wgpu::BufferBindingType::Storage}} {}
 
-  std::size_t sizeBytes() { return m_buffers.template sizeBytes<0>(); }
+  std::size_t sizeBytes() { return m_buffers.template sizeBytes<1>(); }
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
   wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
 
   void draw(wgpu::RenderPassEncoder renderPass) {
-    renderPass.setVertexBuffer(0, m_buffers.template get<0>(), 0, sizeBytes());
-    renderPass.draw(m_buffers.template size<0>(), 1, 0, 0);
+    renderPass.setVertexBuffer(0, m_buffers.template get<1>(), 0, sizeBytes());
+    renderPass.draw(m_buffers.template size<1>(), 1, 0, 0);
   }
 
  private:
-  BufferGroup<T, std::uint32_t> m_buffers;
+  BufferGroup<glm::vec4, T, std::uint32_t> m_buffers;
 };
 
 template <typename T>
@@ -178,7 +183,7 @@ class Uniform {
       : m_buffers{renderer,
                   {renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst},
                   visibility,
-                  wgpu::BufferBindingType::Uniform} {}
+                  {wgpu::BufferBindingType::Uniform}} {}
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_buffers.bindGroupLayout(); }
 
