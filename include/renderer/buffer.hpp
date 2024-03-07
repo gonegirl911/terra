@@ -26,7 +26,7 @@ class Buffer {
 
   Buffer(const Buffer&) = delete;
 
-  Buffer(Buffer&& other) { std::swap(m_buffer, other.m_buffer); }
+  Buffer(Buffer&& other) noexcept { std::swap(m_buffer, other.m_buffer); }
 
   Buffer& operator=(const Buffer&) = delete;
 

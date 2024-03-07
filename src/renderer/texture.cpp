@@ -21,7 +21,7 @@ DepthBuffer::DepthBuffer(Renderer& renderer) {
   m_view = m_texture.createView(textureViewDesc);
 }
 
-DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other) {
+DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other) noexcept {
   std::swap(m_texture, other.m_texture);
   std::swap(m_view, other.m_view);
   return *this;

@@ -8,7 +8,7 @@ class DepthBuffer {
   explicit DepthBuffer(Renderer& renderer);
   DepthBuffer(const DepthBuffer&) = delete;
   DepthBuffer& operator=(const DepthBuffer&) = delete;
-  DepthBuffer& operator=(DepthBuffer&& other);
+  DepthBuffer& operator=(DepthBuffer&& other) noexcept;
   ~DepthBuffer();
 
   wgpu::TextureView view() const;
