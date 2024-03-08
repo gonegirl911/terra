@@ -334,10 +334,9 @@ Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout
       m_vertices{renderer, {}, 30208},
       m_clear{
         renderer, Shader{renderer, "../assets/shaders/clear.wgsl"}, {m_vertices.bindGroupLayout()}},
-      m_generator{
-        renderer,
-        Shader{renderer, "../assets/shaders/generator.wgsl"},
-        {m_tables.bindGroupLayout(), cameraBindGroupLayout, m_vertices.bindGroupLayout()}},
+      m_generator{renderer,
+                  Shader{renderer, "../assets/shaders/generator.wgsl"},
+                  {m_tables.bindGroupLayout(), m_vertices.bindGroupLayout()}},
       m_program{renderer,
                 Shader{renderer, "../assets/shaders/terrain.wgsl"},
                 {TerrainVertex::DESC},
@@ -353,7 +352,7 @@ void Terrain::update(Renderer& renderer) {
 void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
                    wgpu::BindGroup cameraBindGroup) {
   if (m_shouldGenerate) {
-    generate(encoder, cameraBindGroup);
+    generate(encoder);
     m_shouldGenerate = false;
   }
 
@@ -381,9 +380,9 @@ void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
   renderPass.release();
 }
 
-void Terrain::generate(wgpu::CommandEncoder encoder, wgpu::BindGroup cameraBindGroup) const {
+void Terrain::generate(wgpu::CommandEncoder encoder) const {
   auto computePass = encoder.beginComputePass(wgpu::Default);
-  m_generator.bind(computePass, m_tables.bindGroup(), cameraBindGroup, m_vertices.bindGroup());
+  m_generator.bind(computePass, m_tables.bindGroup(), m_vertices.bindGroup());
   computePass.dispatchWorkgroups(8, 8, 8);
   computePass.end();
   computePass.release();

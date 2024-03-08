@@ -2,8 +2,7 @@
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
-Camera::Camera(Renderer& renderer)
-    : m_uniform{renderer, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Compute} {}
+Camera::Camera(Renderer& renderer) : m_uniform{renderer, wgpu::ShaderStage::Vertex} {}
 
 void Camera::onCursorPos(double dx, double dy) { m_controller.onCursorPos(dx, dy); }
 
