@@ -331,17 +331,25 @@ constexpr std::array<glm::vec3, 32> RAY_DIRS{{
 
 Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout)
     : m_tables{renderer, CORNER_DELTAS, TRIANGULATIONS, EDGE_CORNERS, RAY_DIRS},
-      m_vertices{renderer, {}, 30208},
+      m_chunks{renderer},
       m_clear{
-        renderer, Shader{renderer, "../assets/shaders/clear.wgsl"}, {m_vertices.bindGroupLayout()}},
+        renderer, Shader{renderer, "../assets/shaders/clear.wgsl"}, {m_chunks.bindGroupLayout()}},
       m_generator{renderer,
                   Shader{renderer, "../assets/shaders/generator.wgsl"},
-                  {m_tables.bindGroupLayout(), m_vertices.bindGroupLayout()}},
+                  {m_tables.bindGroupLayout(), m_chunks.bindGroupLayout()}},
       m_program{renderer,
                 Shader{renderer, "../assets/shaders/terrain.wgsl"},
                 {TerrainVertex::DESC},
                 {cameraBindGroupLayout}},
-      m_depthBuffer{renderer} {}
+      m_depthBuffer{renderer} {
+  for (auto x = 0; x < 4; ++x) {
+    for (auto y = 0; y < 4; ++y) {
+      for (auto z = 0; z < 4; ++z) {
+        m_chunks.insert(renderer, {x, y, z, 0}, 30208);
+      }
+    }
+  }
+}
 
 void Terrain::update(Renderer& renderer) {
   if (renderer.isResized) {
@@ -374,7 +382,7 @@ void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
 
   auto renderPass = encoder.beginRenderPass(renderPassDesc);
   m_program.bind(renderPass, cameraBindGroup);
-  m_vertices.draw(renderPass);
+  m_chunks.draw(renderPass);
   renderPass.end();
 
   renderPass.release();
@@ -382,8 +390,13 @@ void Terrain::draw(wgpu::TextureView view, wgpu::CommandEncoder encoder,
 
 void Terrain::generate(wgpu::CommandEncoder encoder) const {
   auto computePass = encoder.beginComputePass(wgpu::Default);
-  m_generator.bind(computePass, m_tables.bindGroup(), m_vertices.bindGroup());
-  computePass.dispatchWorkgroups(8, 8, 8);
+
+  m_chunks.apply([&](auto bindGroup) {
+    m_generator.bind(computePass, m_tables.bindGroup(), bindGroup);
+    computePass.dispatchWorkgroups(8, 8, 8);
+  });
+
   computePass.end();
+
   computePass.release();
 }

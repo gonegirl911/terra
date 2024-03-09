@@ -29,7 +29,7 @@ class Terrain {
 
  private:
   ConstantGroup<glm::vec3, std::array<std::int32_t, 16>, glm::uvec2, glm::vec3> m_tables;
-  VertexBuffer<TerrainVertex> m_vertices;
+  ChunkMap<TerrainVertex> m_chunks;
   ComputeProgram m_clear;
   ComputeProgram m_generator;
   RenderProgram m_program;
