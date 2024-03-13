@@ -17,19 +17,19 @@ glm::vec3 View::origin() const { return m_origin; }
 glm::mat4 View::matrix() const {
   // clang-format off
   return {
-    m_right.x, m_up.x, m_forward.x, 0.0,
-    m_right.y, m_up.y, m_forward.y, 0.0,
-    m_right.z, m_up.z, m_forward.z, 0.0,
-    0.0, 0.0, 0.0, 1.0,
+      m_right.x, m_up.x, m_forward.x, 0.0,
+      m_right.y, m_up.y, m_forward.y, 0.0,
+      m_right.z, m_up.z, m_forward.z, 0.0,
+      0.0, 0.0, 0.0, 1.0,
   };
   // clang-format on
 }
 
 glm::vec3 View::forward(float yaw, float pitch) {
   return {
-    glm::cos(yaw) * glm::cos(pitch),
-    glm::sin(pitch),
-    glm::sin(yaw) * glm::cos(pitch),
+      glm::cos(yaw) * glm::cos(pitch),
+      glm::sin(pitch),
+      glm::sin(yaw) * glm::cos(pitch),
   };
 }
 

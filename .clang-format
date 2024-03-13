@@ -3,5 +3,4 @@ IncludeBlocks: Merge
 DerivePointerAlignment: false
 PointerAlignment: Left
 ColumnLimit: 100
-ContinuationIndentWidth: 2
 SpaceBeforeParens: Custom

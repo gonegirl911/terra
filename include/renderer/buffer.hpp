@@ -106,8 +106,8 @@ class BufferGroup {
   wgpu::BindGroup bindGroup() const { return m_bindGroup; }
 
   static wgpu::BindGroupLayout bindGroupLayout(
-    Renderer& renderer, wgpu::ShaderStageFlags visibility,
-    std::array<wgpu::BufferBindingType, sizeof...(Ts)> types) {
+      Renderer& renderer, wgpu::ShaderStageFlags visibility,
+      std::array<wgpu::BufferBindingType, sizeof...(Ts)> types) {
     const auto bindGroupLayoutEntries = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
       return std::array{[&] {
         wgpu::BindGroupLayoutEntry entry{wgpu::Default};
@@ -135,13 +135,13 @@ class ConstantGroup {
  public:
   ConstantGroup(Renderer& renderer, std::span<const Ts>... data)
       : m_bindGroupLayout{decltype(m_buffers)::bindGroupLayout(
-          renderer, wgpu::ShaderStage::Compute, {[]<typename T> {
-            return wgpu::BufferBindingType::ReadOnlyStorage;
-          }.template operator()<Ts>()...})},
+            renderer, wgpu::ShaderStage::Compute, {[]<typename T> {
+              return wgpu::BufferBindingType::ReadOnlyStorage;
+            }.template operator()<Ts>()...})},
         m_buffers{
-          renderer,
-          {renderer, data, wgpu::BufferUsage::Storage}...,
-          m_bindGroupLayout,
+            renderer,
+            {renderer, data, wgpu::BufferUsage::Storage}...,
+            m_bindGroupLayout,
         } {}
 
   ~ConstantGroup() { m_bindGroupLayout.release(); }
@@ -160,17 +160,17 @@ class ChunkMap {
  public:
   ChunkMap(Renderer& renderer)
       : m_bindGroupLayout{decltype(m_chunks)::mapped_type::bindGroupLayout(
-          renderer, wgpu::ShaderStage::Compute,
-          {wgpu::BufferBindingType::Uniform, wgpu::BufferBindingType::Storage,
-           wgpu::BufferBindingType::Storage})} {}
+            renderer, wgpu::ShaderStage::Compute,
+            {wgpu::BufferBindingType::Uniform, wgpu::BufferBindingType::Storage,
+             wgpu::BufferBindingType::Storage})} {}
 
   ~ChunkMap() { m_bindGroupLayout.release(); }
 
   void insert(Renderer& renderer, glm::vec4 coords, std::size_t size) {
     m_chunks.try_emplace(
-      coords, renderer, Buffer<glm::vec4>{renderer, {&coords, 1}, wgpu::BufferUsage::Uniform},
-      Buffer<V>{renderer, size, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::Storage},
-      Buffer<std::uint32_t>{renderer, 1, wgpu::BufferUsage::Storage}, m_bindGroupLayout);
+        coords, renderer, Buffer<glm::vec4>{renderer, {&coords, 1}, wgpu::BufferUsage::Uniform},
+        Buffer<V>{renderer, size, wgpu::BufferUsage::Vertex | wgpu::BufferUsage::Storage},
+        Buffer<std::uint32_t>{renderer, 1, wgpu::BufferUsage::Storage}, m_bindGroupLayout);
   }
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }

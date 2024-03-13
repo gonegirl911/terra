@@ -44,8 +44,8 @@ inline constexpr auto ATTRIBS = attribs<Ts...>();
 
 template <typename... Ts>
 inline constexpr WGPUVertexBufferLayout LAYOUT{
-  .arrayStride = (sizeof(Ts) + ...),
-  .stepMode = WGPUVertexStepMode_Vertex,
-  .attributeCount = sizeof...(Ts),
-  .attributes = ATTRIBS<Ts...>.data(),
+    .arrayStride = (sizeof(Ts) + ...),
+    .stepMode = WGPUVertexStepMode_Vertex,
+    .attributeCount = sizeof...(Ts),
+    .attributes = ATTRIBS<Ts...>.data(),
 };

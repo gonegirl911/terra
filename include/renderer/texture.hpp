@@ -1,3 +1,5 @@
+#pragma once
+
 #include <webgpu/webgpu.hpp>
 #include "renderer/renderer.hpp"
 
