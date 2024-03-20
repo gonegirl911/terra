@@ -76,11 +76,11 @@ class BufferGroup {
         entry.size = std::get<Is>(m_buffers).sizeBytes();
         return entry;
       }()...};
-    }(std::make_index_sequence<sizeof...(Ts)>{});
+    }(std::index_sequence_for<Ts...>{});
 
     wgpu::BindGroupDescriptor bindGroupDesc{wgpu::Default};
     bindGroupDesc.layout = bindGroupLayout;
-    bindGroupDesc.entryCount = sizeof...(Ts);
+    bindGroupDesc.entryCount = bindGroupEntries.size();
     bindGroupDesc.entries = bindGroupEntries.data();
 
     m_bindGroup = renderer.device.createBindGroup(bindGroupDesc);
@@ -116,7 +116,7 @@ class BufferGroup {
         entry.buffer.type = types[Is];
         return entry;
       }()...};
-    }(std::make_index_sequence<sizeof...(Ts)>{});
+    }(std::index_sequence_for<Ts...>{});
 
     wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{wgpu::Default};
     bindGroupLayoutDesc.entryCount = bindGroupLayoutEntries.size();
@@ -176,7 +176,7 @@ class ChunkMap {
   wgpu::BindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }
 
   void apply(std::invocable<wgpu::BindGroup> auto f) const {
-    for (auto& [coords, buffers] : m_chunks) {
+    for (const auto& [coords, buffers] : m_chunks) {
       f(m_chunks.at(coords).bindGroup());
     }
   }
