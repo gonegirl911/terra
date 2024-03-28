@@ -7,6 +7,7 @@ class DepthBuffer {
  public:
   static constexpr auto FORMAT = wgpu::TextureFormat::Depth32Float;
 
+  DepthBuffer() = default;
   explicit DepthBuffer(Renderer& renderer);
   DepthBuffer(const DepthBuffer&) = delete;
   DepthBuffer& operator=(const DepthBuffer&) = delete;

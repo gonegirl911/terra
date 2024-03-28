@@ -340,8 +340,7 @@ Terrain::Terrain(Renderer& renderer, wgpu::BindGroupLayout cameraBindGroupLayout
       m_program{renderer,
                 Shader{renderer, "../assets/shaders/terrain.wgsl"},
                 {TerrainVertex::DESC},
-                {cameraBindGroupLayout}},
-      m_depthBuffer{renderer} {
+                {cameraBindGroupLayout}} {
   for (auto x = 0; x < 4; ++x) {
     for (auto y = 0; y < 4; ++y) {
       for (auto z = 0; z < 4; ++z) {

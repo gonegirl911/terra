@@ -11,7 +11,7 @@ class Renderer {
   wgpu::Surface surface{nullptr};
   wgpu::Device device{nullptr};
   wgpu::Queue queue{nullptr};
-  wgpu::SurfaceConfiguration config;
+  wgpu::SurfaceConfiguration config{wgpu::Default};
   bool isResized{};
 
   explicit Renderer(const Window& window);
@@ -47,11 +47,7 @@ class Renderer {
  private:
   bool shouldResize{true};
 
-  wgpu::SurfaceConfiguration getDefaultConfig(const Window& window, wgpu::Adapter adapter);
-
   void recreateSurface();
-
-  wgpu::SurfaceCapabilities getCapabilities(wgpu::Adapter adapter);
 
   bool resize(int width, int height);
 

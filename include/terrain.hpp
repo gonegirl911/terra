@@ -33,7 +33,7 @@ class Terrain {
   ComputeProgram m_clear;
   ComputeProgram m_generator;
   RenderProgram m_program;
-  DepthBuffer m_depthBuffer;
+  DepthBuffer m_depthBuffer{};
   bool m_shouldGenerate{true};
 
   void generate(wgpu::CommandEncoder ComputePassEncoder) const;
