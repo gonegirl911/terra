@@ -28,9 +28,11 @@ DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other) noexcept {
 }
 
 DepthBuffer::~DepthBuffer() {
-  m_view.release();
-  m_texture.destroy();
-  m_texture.release();
+  if (m_texture) {
+    m_view.release();
+    m_texture.destroy();
+    m_texture.release();
+  }
 }
 
 wgpu::TextureView DepthBuffer::view() const { return m_view; }
