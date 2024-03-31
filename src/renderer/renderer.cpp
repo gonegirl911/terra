@@ -1,6 +1,5 @@
 #define WEBGPU_CPP_IMPLEMENTATION
 #include "renderer/renderer.hpp"
-#include <format>
 #include <stdexcept>
 #include <webgpu/webgpu.hpp>
 #include "glfw3webgpu.h"
@@ -28,9 +27,6 @@ Renderer::Renderer(const Window& window) : instance{wgpu::createInstance(wgpu::D
   if (!device) {
     throw std::runtime_error{"Device not available"};
   }
-  device.setUncapturedErrorCallback([](auto, auto message) {
-    throw std::runtime_error{std::format("Uncaptured device error: {}", message)};
-  });
 
   queue = device.getQueue();
 
