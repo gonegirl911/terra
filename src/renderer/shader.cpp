@@ -9,7 +9,7 @@
 
 std::string readToString(const fs::path& path) {
   std::ifstream ifs{path};
-  ifs.exceptions(std::ios_base::badbit);
+  ifs.exceptions(std::ios_base::failbit);
   return {std::istreambuf_iterator{ifs}, {}};
 }
 
