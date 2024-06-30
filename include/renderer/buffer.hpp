@@ -176,8 +176,8 @@ class ChunkMap {
   wgpu::BindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }
 
   void apply(std::invocable<wgpu::BindGroup> auto f) const {
-    for (const auto& [coords, buffers] : m_chunks) {
-      f(m_chunks.at(coords).bindGroup());
+    for (const auto& buffers : std::views::values(m_chunks)) {
+      f(buffers.bindGroup());
     }
   }
 
