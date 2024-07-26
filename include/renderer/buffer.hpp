@@ -42,13 +42,13 @@ class Buffer {
     }
   }
 
-  operator wgpu::Buffer() const { return m_buffer; }
-
-  wgpu::Buffer operator*() const { return m_buffer; }
-
   std::size_t size() { return sizeBytes() / sizeof(T); }
 
   std::size_t sizeBytes() { return m_buffer.getSize(); }
+
+  operator wgpu::Buffer() const { return m_buffer; }
+
+  wgpu::Buffer operator*() const { return m_buffer; }
 
  private:
   wgpu::Buffer m_buffer{nullptr};
@@ -88,22 +88,19 @@ class BufferGroup {
 
   ~BufferGroup() { m_bindGroup.release(); }
 
+  wgpu::BindGroup bindGroup() const { return m_bindGroup; }
+
+  operator wgpu::Buffer() const
+    requires (sizeof...(Ts) == 1)
+  {
+    return *std::get<0>(m_buffers);
+  }
+
   template <std::size_t Index>
-  wgpu::Buffer get() const {
+    requires (sizeof...(Ts) > 1)
+  auto& get() {
     return std::get<Index>(m_buffers);
   }
-
-  template <std::size_t Index>
-  std::size_t size() {
-    return std::get<Index>(m_buffers).size();
-  }
-
-  template <std::size_t Index>
-  std::size_t sizeBytes() {
-    return std::get<Index>(m_buffers).sizeBytes();
-  }
-
-  wgpu::BindGroup bindGroup() const { return m_bindGroup; }
 
   static wgpu::BindGroupLayout bindGroupLayout(
       Renderer& renderer, wgpu::ShaderStageFlags visibility,
@@ -183,8 +180,9 @@ class ChunkMap {
 
   void draw(wgpu::RenderPassEncoder renderPass) {
     for (auto& buffers : std::views::values(m_chunks)) {
-      renderPass.setVertexBuffer(0, buffers.template get<1>(), 0, buffers.template sizeBytes<1>());
-      renderPass.draw(buffers.template size<1>(), 1, 0, 0);
+      auto& vertexBuffer = buffers.template get<1>();
+      renderPass.setVertexBuffer(0, vertexBuffer, 0, vertexBuffer.sizeBytes());
+      renderPass.draw(vertexBuffer.size(), 1, 0, 0);
     }
   }
 
@@ -197,23 +195,23 @@ template <typename T>
 class Uniform {
  public:
   Uniform(Renderer& renderer, wgpu::ShaderStageFlags visibility)
-      : m_bindGroupLayout{decltype(m_buffers)::bindGroupLayout(renderer, visibility,
-                                                               {wgpu::BufferBindingType::Uniform})},
-        m_buffers{renderer,
-                  {renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst},
-                  m_bindGroupLayout} {}
+      : m_bindGroupLayout{decltype(m_buffer)::bindGroupLayout(renderer, visibility,
+                                                              {wgpu::BufferBindingType::Uniform})},
+        m_buffer{renderer,
+                 {renderer, 1, wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst},
+                 m_bindGroupLayout} {}
 
   ~Uniform() { m_bindGroupLayout.release(); }
 
   wgpu::BindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }
 
-  wgpu::BindGroup bindGroup() const { return m_buffers.bindGroup(); }
+  wgpu::BindGroup bindGroup() const { return m_buffer.bindGroup(); }
 
   void set(Renderer& renderer, const T& value) const {
-    renderer.queue.writeBuffer(m_buffers.template get<0>(), 0, &value, sizeof(T));
+    renderer.queue.writeBuffer(m_buffer, 0, &value, sizeof(T));
   }
 
  private:
   wgpu::BindGroupLayout m_bindGroupLayout;
-  BufferGroup<T> m_buffers;
+  BufferGroup<T> m_buffer;
 };
